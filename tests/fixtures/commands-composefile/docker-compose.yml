@@ -1,0 +1,7 @@
+version: '2.2'
+services:
+  implicit:
+    image: composetest_test
+  explicit:
+    image: composetest_test
+    command: [ "/bin/true" ]
