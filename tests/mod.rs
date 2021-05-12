@@ -1,7 +1,7 @@
 #[test]
 fn parse_compose() {
     use glob::glob;
-    use compose::ComposeFile;
+    use docker_compose_types::ComposeFile;
 
     for entry in glob("tests/fixtures/**/docker-compose.yml").expect("Failed to read glob pattern") {
         if let Ok(p) = entry {
@@ -17,7 +17,7 @@ fn parse_compose() {
 
 #[test]
 fn parse_compose_v3_full() {
-    use compose::Compose;
+    use docker_compose_types::Compose;
 
     let file_payload = std::fs::read_to_string("tests/fixtures/v3-full/docker-compose.yml").unwrap();
     match serde_yaml::from_str::<Compose>(&file_payload) {

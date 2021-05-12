@@ -1,6 +1,6 @@
 [package]
 name = "docker-compose-types"
-description = "A simple crate that allows for the Deserialization and Serialization of docker-compose.yml file in a relatively strongly typed fashion"
+description = "Deserialization and Serialization of docker-compose.yml files in a relatively strongly typed fashion."
 version = "0.1.1"
 edition = "2018"
 repository = "https://github.com/stephanbuys/docker-compose-types"

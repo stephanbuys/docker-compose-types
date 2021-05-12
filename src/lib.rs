@@ -448,6 +448,7 @@ volumes:
 "#;
 
     #[derive(Deserialize)]
+    #[allow(dead_code)]
     struct Container {
         volumes: Volumes
     }
