@@ -1,5 +1,4 @@
 version: "2.1"
 services:
   foo:
-    env_file:
-      - .env
+    privileged: true
