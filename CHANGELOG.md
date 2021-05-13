@@ -3,6 +3,9 @@ Changelog
 
 ## [unreleased]
 
+## v0.1.4
+- Allow external networks to be explicitly disabled
+
 ## v0.1.3
 - Support the `privileged` flag for a service
 

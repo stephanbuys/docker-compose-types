@@ -6,13 +6,13 @@ use indexmap::map::IndexMap;
 #[serde(untagged)]
 pub enum ComposeFile {
     V2Plus(Compose),
-    V1(IndexMap<String,Service>),
+    V1(IndexMap<String, Service>),
     Single(SingleService),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SingleService {
-    service: Service
+    service: Service,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -111,7 +111,7 @@ pub struct Service {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub volumes_from: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub extends: Option<IndexMap<String,String>>,
+    pub extends: Option<IndexMap<String, String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub logging: Option<LoggingParameters>,
     #[serde(default, skip_serializing_if = "is_zero")]
@@ -138,14 +138,14 @@ impl Service {
 #[serde(untagged)]
 pub enum EnvFile {
     Simple(String),
-    List(Vec<String>)
+    List(Vec<String>),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum DependsOnOptions {
     Simple(Vec<String>),
-    Conditional(IndexMap<String,DependsCondition>)
+    Conditional(IndexMap<String, DependsCondition>),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -158,20 +158,20 @@ pub struct DependsCondition {
 pub struct LoggingParameters {
     pub driver: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub options: Option<LoggingParameterOptions>
+    pub options: Option<LoggingParameterOptions>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LoggingParameterOptions {
     #[serde(rename = "max-size")]
-    pub max_size: String
+    pub max_size: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Environment {
     List(Vec<String>),
-    KvPair(IndexMap<String,String>)
+    KvPair(IndexMap<String, String>),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -220,12 +220,12 @@ pub struct AdvancedBuildStep {
     shm_size: Option<u64>,
 }
 
-#[derive( Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(untagged)]
 pub enum BuildArgs {
     Simple(String),
     List(Vec<String>),
-    KvPair(IndexMap<String, String>)
+    KvPair(IndexMap<String, String>),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -242,17 +242,17 @@ pub struct ComposeVolumes(pub IndexMap<String, Option<IndexMap<String, String>>>
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum  TopLevelVolumes {
+pub enum TopLevelVolumes {
     CV(ComposeVolumes),
-    Labelled(LabelledComposeVolumes)
+    Labelled(LabelledComposeVolumes),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct LabelledComposeVolumes(pub IndexMap<String,VolumeLabels >);
+pub struct LabelledComposeVolumes(pub IndexMap<String, VolumeLabels>);
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct VolumeLabels {
-    labels: IndexMap<String,String>
+    labels: IndexMap<String, String>,
 }
 
 
@@ -265,7 +265,7 @@ pub enum NetworkSettingsOptions {
     External(ExternalNetworkSetting),
     Attachable(AttachableNetwork),
     Other(NetworkSettings),
-    Empty(IndexMap<(),()>)
+    Empty(IndexMap<(), ()>),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -275,9 +275,16 @@ pub struct AttachableNetwork {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ExternalNetwork {
+    Detailed(ExternalNetworkSettingDetails),
+    Bool(bool)
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ExternalNetworkSetting {
-    pub external: ExternalNetworkSettingDetails,
+    pub external: ExternalNetwork,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -285,6 +292,11 @@ pub struct ExternalNetworkSetting {
 pub struct ExternalNetworkSettingDetails {
     pub name: String,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ExternalNetworkSettingBool(bool);
+
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -349,7 +361,7 @@ pub struct Healthcheck {
 #[serde(untagged)]
 pub enum HealthcheckTest {
     Single(String),
-    Multiple(Vec<String>)
+    Multiple(Vec<String>),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -459,7 +471,7 @@ volumes:
     #[derive(Deserialize)]
     #[allow(dead_code)]
     struct Container {
-        volumes: Volumes
+        volumes: Volumes,
     }
-    let _parsed : Container = serde_yaml::from_str(v).unwrap();
+    let _parsed: Container = serde_yaml::from_str(v).unwrap();
 }
