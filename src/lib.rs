@@ -87,7 +87,7 @@ pub struct Service {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub entrypoint: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub env_file: Option<String>,
+    pub env_file: Option<EnvFile>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stop_grace_period: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -130,6 +130,13 @@ impl Service {
         }
         ""
     }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum EnvFile {
+    Simple(String),
+    List(Vec<String>)
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

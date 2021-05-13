@@ -3,6 +3,7 @@ fn parse_compose() {
     use glob::glob;
     use docker_compose_types::ComposeFile;
 
+    let mut all_succeeded = true;
     for entry in glob("tests/fixtures/**/docker-compose.yml").expect("Failed to read glob pattern") {
         if let Ok(p) = entry {
             // Can't figure out why this specific file fails on the top-level enum, it passed on the test below
@@ -10,9 +11,17 @@ fn parse_compose() {
                 continue
             }
             let file_payload = std::fs::read_to_string(&p).unwrap();
-            serde_yaml::from_str::<ComposeFile>(&file_payload).unwrap();
+            match serde_yaml::from_str::<ComposeFile>(&file_payload) {
+                Ok(_) => {}
+                Err(e) => {
+                    all_succeeded = false;
+                    eprintln!("{} {:?}", p.display(), e);
+                }
+            }
         }
     }
+
+    assert!(all_succeeded);
 }
 
 #[test]
