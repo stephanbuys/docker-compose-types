@@ -97,6 +97,8 @@ pub struct Service {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub links: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub dns: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ipc: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub net: Option<String>,
@@ -171,8 +173,17 @@ pub struct LoggingParameterOptions {
 #[serde(untagged)]
 pub enum Environment {
     List(Vec<String>),
-    KvPair(IndexMap<String, String>),
+    KvPair(IndexMap<String, Option<String>>),
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum EnvTypes {
+    String(String),
+    Number(serde_yaml::Number),
+}
+
+
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Services(pub IndexMap<String, Option<Service>>);
@@ -262,34 +273,20 @@ pub struct ComposeNetworks(pub IndexMap<String, NetworkSettingsOptions>);
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum NetworkSettingsOptions {
-    External(ExternalNetworkSetting),
-    Attachable(AttachableNetwork),
-    Other(NetworkSettings),
+    Settings(NetworkSettings),
     Empty(IndexMap<(), ()>),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct AttachableNetwork {
-    pub attachable: bool,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ExternalNetwork {
-    Detailed(ExternalNetworkSettingDetails),
+pub enum ComposeNetwork {
+    Detailed(ComposeNetworkSettingDetails),
     Bool(bool)
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct ExternalNetworkSetting {
-    pub external: ExternalNetwork,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct ExternalNetworkSettingDetails {
+pub struct ComposeNetworkSettingDetails {
     pub name: String,
 }
 
@@ -298,12 +295,19 @@ pub struct ExternalNetworkSettingDetails {
 pub struct ExternalNetworkSettingBool(bool);
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct NetworkSettings {
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub attachable: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub driver: Option<String>,
-    pub ipam: Ipam,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub internal: Option<ComposeNetwork>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub external: Option<ComposeNetwork>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ipam: Option<Ipam>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

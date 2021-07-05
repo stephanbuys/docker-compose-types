@@ -3,6 +3,9 @@ Changelog
 
 ## [unreleased]
 
+## v0.1.5
+- Allow dns servers to be specified, improve network parsing
+
 ## v0.1.4
 - Allow external networks to be explicitly disabled
 

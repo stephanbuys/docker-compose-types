@@ -10,3 +10,6 @@ services:
 networks:
   test-net:
     external: false
+  test-net-2:
+    driver: bridge
+    internal: true
