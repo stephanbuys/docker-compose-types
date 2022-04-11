@@ -1,14 +1,15 @@
 #[test]
 fn parse_compose() {
-    use glob::glob;
     use docker_compose_types::ComposeFile;
+    use glob::glob;
 
     let mut all_succeeded = true;
-    for entry in glob("tests/fixtures/**/docker-compose.yml").expect("Failed to read glob pattern") {
+    for entry in glob("tests/fixtures/**/docker-compose.yml").expect("Failed to read glob pattern")
+    {
         if let Ok(p) = entry {
             // Can't figure out why this specific file fails on the top-level enum, it passed on the test below
             if p.display().to_string().contains("v3-full") {
-                continue
+                continue;
             }
             let file_payload = std::fs::read_to_string(&p).unwrap();
             match serde_yaml::from_str::<ComposeFile>(&file_payload) {
@@ -28,9 +29,24 @@ fn parse_compose() {
 fn parse_compose_v3_full() {
     use docker_compose_types::Compose;
 
-    let file_payload = std::fs::read_to_string("tests/fixtures/v3-full/docker-compose.yml").unwrap();
+    let file_payload =
+        std::fs::read_to_string("tests/fixtures/v3-full/docker-compose.yml").unwrap();
     match serde_yaml::from_str::<Compose>(&file_payload) {
-        Ok(_c) => { }
-        Err(e) => eprintln!("{:?}" ,e)
+        Ok(_c) => {}
+        Err(e) => eprintln!("{:?}", e),
+    }
+}
+
+#[test]
+fn parse_extensions_v3_full() {
+    use docker_compose_types::Compose;
+
+    let file_payload =
+        std::fs::read_to_string("tests/fixtures/extensions/docker-compose.yml").unwrap();
+    match serde_yaml::from_str::<Compose>(&file_payload) {
+        Ok(_c) => {
+            println!("{:#?}", _c)
+        }
+        Err(e) => eprintln!("{:?}", e),
     }
 }

@@ -1,7 +1,8 @@
 Changelog
 =========
 
-## [unreleased]
+## v0.1.6
+- Support Extensions (fields starting with "x-")
 
 ## v0.1.5
 - Allow dns servers to be specified, improve network parsing

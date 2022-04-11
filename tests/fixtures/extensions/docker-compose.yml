@@ -1,0 +1,10 @@
+version: "3.9"
+x-start-shell: true
+services:
+  redis-admin:
+     image: erikdubbelboer/phpredisadmin
+     depends_on:
+       - redis
+     ports:
+       - 80:80
+     x-tab-name: Redis Admin

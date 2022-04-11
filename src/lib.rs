@@ -1,6 +1,9 @@
-use serde::{Deserialize, Serialize};
+use anyhow::{bail, Error};
 use derive_builder::*;
 use indexmap::map::IndexMap;
+use serde::{Deserialize, Serialize};
+use serde_yaml::Value;
+use std::convert::TryFrom;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -16,7 +19,6 @@ pub struct SingleService {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct Compose {
     #[serde(skip_serializing_if = "Option::is_none")]
     version: Option<String>,
@@ -28,6 +30,8 @@ pub struct Compose {
     pub networks: Option<ComposeNetworks>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub service: Option<Service>,
+    #[serde(flatten, skip_serializing_if = "IndexMap::is_empty")]
+    pub extensions: IndexMap<Extension, Value>,
 }
 
 impl Compose {
@@ -38,12 +42,12 @@ impl Compose {
             services: None,
             volumes: None,
             networks: None,
+            extensions: IndexMap::new(),
         }
     }
 }
 
 #[derive(Builder, Clone, Debug, Default, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
 #[builder(setter(into), default)]
 pub struct Service {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -118,6 +122,8 @@ pub struct Service {
     pub logging: Option<LoggingParameters>,
     #[serde(default, skip_serializing_if = "is_zero")]
     pub scale: i64,
+    #[serde(flatten, skip_serializing_if = "IndexMap::is_empty")]
+    pub extensions: IndexMap<Extension, Value>,
 }
 
 impl Service {
@@ -155,7 +161,6 @@ pub struct DependsCondition {
     pub condition: String,
 }
 
-
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LoggingParameters {
     pub driver: String,
@@ -183,7 +188,21 @@ pub enum EnvTypes {
     Number(serde_yaml::Number),
 }
 
+#[derive(Clone, Debug, Default, Deserialize, Serialize, Hash, Ord, PartialOrd, Eq, PartialEq)]
+#[serde(try_from = "String")]
+pub struct Extension(String);
 
+impl TryFrom<String> for Extension {
+    type Error = Error;
+
+    fn try_from(s: String) -> Result<Self, Self::Error> {
+        if s.starts_with("x-") {
+            Ok(Self(s.to_string()))
+        } else {
+            bail!("Unknown attribute: {}, Please note Extensions must start with 'x-' (see https://docs.docker.com/compose/compose-file/#extension)", s)
+        }
+    }
+}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Services(pub IndexMap<String, Option<Service>>);
@@ -266,7 +285,6 @@ pub struct VolumeLabels {
     labels: IndexMap<String, String>,
 }
 
-
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ComposeNetworks(pub IndexMap<String, NetworkSettingsOptions>);
 
@@ -281,7 +299,7 @@ pub enum NetworkSettingsOptions {
 #[serde(untagged)]
 pub enum ComposeNetwork {
     Detailed(ComposeNetworkSettingDetails),
-    Bool(bool)
+    Bool(bool),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -293,7 +311,6 @@ pub struct ComposeNetworkSettingDetails {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ExternalNetworkSettingBool(bool);
-
 
 #[derive(Clone, Default, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
