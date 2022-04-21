@@ -21,7 +21,7 @@ pub struct SingleService {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Compose {
     #[serde(skip_serializing_if = "Option::is_none")]
-    version: Option<String>,
+    pub version: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub services: Option<Services>,
     #[serde(skip_serializing_if = "Option::is_none")]
