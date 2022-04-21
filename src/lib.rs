@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
 use std::convert::TryFrom;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ComposeFile {
     V2Plus(Compose),
@@ -13,12 +13,12 @@ pub enum ComposeFile {
     Single(SingleService),
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SingleService {
     service: Service,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Compose {
     #[serde(skip_serializing_if = "Option::is_none")]
     version: Option<String>,
