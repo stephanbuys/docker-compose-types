@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## v0.1.7
+- Allow 'entrypoint' to be a list
+- Add 'init', 'stdin_open' and 'shm_size' properties
+- Implement Clone for ComposeFile, SingleService and Compose
+
 ## v0.1.6
 - Support Extensions (fields starting with "x-")
 
