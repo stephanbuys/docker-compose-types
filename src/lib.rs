@@ -91,7 +91,7 @@ pub struct Service {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub command: Option<Command>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub entrypoint: Option<String>,
+    pub entrypoint: Option<Entrypoint>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub env_file: Option<EnvFile>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -467,6 +467,13 @@ pub struct Volume {
 pub enum Command {
     Simple(String),
     Args(Vec<String>),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Entrypoint {
+    Simple(String),
+    List(Vec<String>),
 }
 
 #[test]
