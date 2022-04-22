@@ -122,6 +122,12 @@ pub struct Service {
     pub logging: Option<LoggingParameters>,
     #[serde(default, skip_serializing_if = "is_zero")]
     pub scale: i64,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub init: bool,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub stdin_open: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub shm_size: Option<String>,
     #[serde(flatten, skip_serializing_if = "IndexMap::is_empty")]
     pub extensions: IndexMap<Extension, Value>,
 }

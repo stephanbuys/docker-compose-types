@@ -1,0 +1,7 @@
+version: "2"
+services:
+  foo:
+    image: busybox:1.27.2
+    init: true
+    stdin_open: true
+    shm_size: 1g
