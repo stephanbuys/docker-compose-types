@@ -4,7 +4,9 @@ fn parse_compose() {
     use glob::glob;
 
     let mut all_succeeded = true;
-    for entry in glob("tests/fixtures/**/docker-compose.yml").expect("Failed to read glob pattern").filter_map(Result::ok)
+    for entry in glob("tests/fixtures/**/docker-compose.yml")
+        .expect("Failed to read glob pattern")
+        .filter_map(Result::ok)
     {
         // Can't figure out why this specific file fails on the top-level enum, it passed on the test below
         if entry.display().to_string().contains("v3-full") {

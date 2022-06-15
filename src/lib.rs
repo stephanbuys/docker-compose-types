@@ -129,17 +129,11 @@ pub struct Service {
 
 impl Service {
     pub fn image(&self) -> &str {
-        if let Some(image) = &self.image {
-            return image;
-        }
-        ""
+        self.image.as_deref().unwrap_or_default()
     }
 
     pub fn network_mode(&self) -> &str {
-        if let Some(network_mode) = &self.network_mode {
-            return network_mode;
-        }
-        ""
+        self.network_mode.as_deref().unwrap_or_default()
     }
 }
 
