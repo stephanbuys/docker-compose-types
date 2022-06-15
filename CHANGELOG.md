@@ -1,6 +1,15 @@
 Changelog
 =========
 
+## v0.2.0
+(Thanks to Atk)
+- Remove anyhow, provide own error type for TryFrom
+- Simplify is_zero
+- Derive more
+- Fix clippy lints
+- Simplify Service::image and Service::network_mode
+- Move test out of lib.rs
+
 ## v0.1.7
 - Allow 'entrypoint' to be a list
 - Add 'init', 'stdin_open' and 'shm_size' properties
