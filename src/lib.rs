@@ -1,9 +1,9 @@
-use anyhow::{bail, Error};
 use derive_builder::*;
 use indexmap::map::IndexMap;
 use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
 use std::convert::TryFrom;
+use std::fmt;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -199,16 +199,30 @@ pub enum EnvTypes {
 pub struct Extension(String);
 
 impl TryFrom<String> for Extension {
-    type Error = Error;
+    type Error = ExtensionParseError;
 
     fn try_from(s: String) -> Result<Self, Self::Error> {
         if s.starts_with("x-") {
-            Ok(Self(s.to_string()))
+            Ok(Self(s))
         } else {
-            bail!("Unknown attribute: {}, Please note Extensions must start with 'x-' (see https://docs.docker.com/compose/compose-file/#extension)", s)
+            Err(ExtensionParseError(s))
         }
     }
 }
+
+/// The result of a failed TryFrom<String> conversion for [`Extension`]
+///
+/// Contains the string that was being converted
+#[derive(Debug)]
+pub struct ExtensionParseError(pub String);
+
+impl fmt::Display for ExtensionParseError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "unknown attribute {:?}, extensions must start with 'x-' (see https://docs.docker.com/compose/compose-file/#extension)", self.0)
+    }
+}
+
+impl std::error::Error for ExtensionParseError {}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Services(pub IndexMap<String, Option<Service>>);
