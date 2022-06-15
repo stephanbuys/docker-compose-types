@@ -6,6 +6,7 @@ use std::convert::TryFrom;
 use std::fmt;
 use std::str::FromStr;
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(untagged)]
 pub enum ComposeFile {
