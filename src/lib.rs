@@ -489,31 +489,3 @@ pub enum Entrypoint {
     Simple(String),
     List(Vec<String>),
 }
-
-#[test]
-fn volumes() {
-    let v = r#"
-volumes:
-  - source: /host/path
-    target: /container/path
-    type: bind
-    read_only: true
-  - source: foobar
-    type: volume
-    target: /container/volumepath
-  - type: volume
-    target: /anonymous
-  - type: volume
-    source: foobar
-    target: /container/volumepath2
-    volume:
-      nocopy: true
-"#;
-
-    #[derive(Deserialize)]
-    #[allow(dead_code)]
-    struct Container {
-        volumes: Volumes,
-    }
-    let _parsed: Container = serde_yaml::from_str(v).unwrap();
-}
