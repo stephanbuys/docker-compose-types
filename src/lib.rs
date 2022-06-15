@@ -4,8 +4,9 @@ use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
 use std::convert::TryFrom;
 use std::fmt;
+use std::str::FromStr;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(untagged)]
 pub enum ComposeFile {
     V2Plus(Compose),
@@ -13,12 +14,12 @@ pub enum ComposeFile {
     Single(SingleService),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
 pub struct SingleService {
     service: Service,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
 pub struct Compose {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
@@ -36,18 +37,11 @@ pub struct Compose {
 
 impl Compose {
     pub fn new() -> Self {
-        Self {
-            version: None,
-            service: None,
-            services: None,
-            volumes: None,
-            networks: None,
-            extensions: IndexMap::new(),
-        }
+        Default::default()
     }
 }
 
-#[derive(Builder, Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Builder, Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 #[builder(setter(into), default)]
 pub struct Service {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -148,55 +142,64 @@ impl Service {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(untagged)]
 pub enum EnvFile {
     Simple(String),
     List(Vec<String>),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(untagged)]
 pub enum DependsOnOptions {
     Simple(Vec<String>),
     Conditional(IndexMap<String, DependsCondition>),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 pub struct DependsCondition {
     pub condition: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 pub struct LoggingParameters {
     pub driver: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub options: Option<LoggingParameterOptions>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 pub struct LoggingParameterOptions {
     #[serde(rename = "max-size")]
     pub max_size: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(untagged)]
 pub enum Environment {
     List(Vec<String>),
     KvPair(IndexMap<String, Option<String>>),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Hash)]
 #[serde(untagged)]
 pub enum EnvTypes {
     String(String),
     Number(serde_yaml::Number),
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize, Hash, Ord, PartialOrd, Eq, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default, Ord, PartialOrd)]
 #[serde(try_from = "String")]
 pub struct Extension(String);
+
+impl FromStr for Extension {
+    type Err = ExtensionParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let owned = s.to_owned();
+        Extension::try_from(owned)
+    }
+}
 
 impl TryFrom<String> for Extension {
     type Error = ExtensionParseError;
@@ -213,7 +216,7 @@ impl TryFrom<String> for Extension {
 /// The result of a failed TryFrom<String> conversion for [`Extension`]
 ///
 /// Contains the string that was being converted
-#[derive(Debug)]
+#[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub struct ExtensionParseError(pub String);
 
 impl fmt::Display for ExtensionParseError {
@@ -224,40 +227,40 @@ impl fmt::Display for ExtensionParseError {
 
 impl std::error::Error for ExtensionParseError {}
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Services(pub IndexMap<String, Option<Service>>);
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct Labels(pub IndexMap<String, String>);
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct Ulimits {
     pub nofile: Nofile,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct Nofile {
     pub soft: i64,
     pub hard: i64,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(untagged)]
 pub enum Networks {
     Simple(Vec<String>),
     Advanced(AdvancedNetworks),
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
 #[serde(untagged)]
 pub enum BuildStep {
     Simple(String),
     Advanced(AdvancedBuildStep),
 }
 
-#[derive(Builder, Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Builder, Clone, Debug, Deserialize, Serialize, Eq, PartialEq, Default)]
 #[serde(deny_unknown_fields)]
 #[builder(setter(into), default)]
 pub struct AdvancedBuildStep {
@@ -270,7 +273,7 @@ pub struct AdvancedBuildStep {
     shm_size: Option<u64>,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
 #[serde(untagged)]
 pub enum BuildArgs {
     Simple(String),
@@ -278,61 +281,61 @@ pub enum BuildArgs {
     KvPair(IndexMap<String, String>),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct AdvancedNetworks(pub IndexMap<String, Option<AdvancedNetworkSettings>>);
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct AdvancedNetworkSettings {
     pub ipv4_address: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct ComposeVolumes(pub IndexMap<String, Option<IndexMap<String, String>>>);
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(untagged)]
 pub enum TopLevelVolumes {
     CV(ComposeVolumes),
     Labelled(LabelledComposeVolumes),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct LabelledComposeVolumes(pub IndexMap<String, VolumeLabels>);
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct VolumeLabels {
     labels: IndexMap<String, String>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct ComposeNetworks(pub IndexMap<String, NetworkSettingsOptions>);
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(untagged)]
 pub enum NetworkSettingsOptions {
     Settings(NetworkSettings),
     Empty(IndexMap<(), ()>),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(untagged)]
 pub enum ComposeNetwork {
     Detailed(ComposeNetworkSettingDetails),
     Bool(bool),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct ComposeNetworkSettingDetails {
     pub name: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct ExternalNetworkSettingBool(bool);
 
-#[derive(Clone, Default, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
 #[serde(deny_unknown_fields)]
 pub struct NetworkSettings {
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
@@ -347,19 +350,19 @@ pub struct NetworkSettings {
     pub ipam: Option<Ipam>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct Ipam {
     pub config: Vec<IpamConfig>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct IpamConfig {
     pub subnet: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct Deploy {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -379,7 +382,7 @@ fn is_zero(val: &i64) -> bool {
     *val == 0
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct Healthcheck {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -394,14 +397,14 @@ pub struct Healthcheck {
     pub disable: bool,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(untagged)]
 pub enum HealthcheckTest {
     Single(String),
     Multiple(Vec<String>),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct Limits {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -410,27 +413,27 @@ pub struct Limits {
     pub memory: Option<String>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct Placement {
     pub constraints: Vec<String>,
     pub preferences: Vec<Preferences>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct Preferences {
     pub spread: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct Resources {
     pub limits: Limits,
     pub reservations: Limits,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct RestartPolicy {
     pub condition: String,
@@ -441,7 +444,7 @@ pub struct RestartPolicy {
     pub window: Option<String>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub struct UpdateConfig {
     pub parallelism: i64,
@@ -451,14 +454,14 @@ pub struct UpdateConfig {
     pub max_failure_ratio: f64,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(untagged)]
 pub enum Volumes {
     Simple(Vec<String>),
     Advanced(Vec<AdvancedVolumes>),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct AdvancedVolumes {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -472,20 +475,20 @@ pub struct AdvancedVolumes {
     pub volume: Option<Volume>,
 }
 
-#[derive(Default, Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
 #[serde(deny_unknown_fields)]
 pub struct Volume {
     pub nocopy: bool,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(untagged)]
 pub enum Command {
     Simple(String),
     Args(Vec<String>),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(untagged)]
 pub enum Entrypoint {
     Simple(String),
