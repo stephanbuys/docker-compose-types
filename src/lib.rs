@@ -376,11 +376,7 @@ pub struct Deploy {
 }
 
 fn is_zero(val: &i64) -> bool {
-    if *val == 0 {
-        true
-    } else {
-        false
-    }
+    *val == 0
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
