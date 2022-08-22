@@ -1,7 +1,7 @@
 use derive_builder::*;
-use indexmap::map::IndexMap;
 use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
+use std::collections::HashMap;
 use std::convert::TryFrom;
 use std::fmt;
 use std::str::FromStr;
@@ -11,7 +11,7 @@ use std::str::FromStr;
 #[serde(untagged)]
 pub enum ComposeFile {
     V2Plus(Compose),
-    V1(IndexMap<String, Service>),
+    V1(HashMap<String, Service>),
     Single(SingleService),
 }
 
@@ -32,8 +32,8 @@ pub struct Compose {
     pub networks: Option<ComposeNetworks>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub service: Option<Service>,
-    #[serde(flatten, skip_serializing_if = "IndexMap::is_empty")]
-    pub extensions: IndexMap<Extension, Value>,
+    #[serde(flatten, skip_serializing_if = "HashMap::is_empty")]
+    pub extensions: HashMap<Extension, Value>,
 }
 
 impl Compose {
@@ -112,7 +112,7 @@ pub struct Service {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub volumes_from: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub extends: Option<IndexMap<String, String>>,
+    pub extends: Option<HashMap<String, String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub logging: Option<LoggingParameters>,
     #[serde(default, skip_serializing_if = "is_zero")]
@@ -123,8 +123,8 @@ pub struct Service {
     pub stdin_open: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub shm_size: Option<String>,
-    #[serde(flatten, skip_serializing_if = "IndexMap::is_empty")]
-    pub extensions: IndexMap<Extension, Value>,
+    #[serde(flatten, skip_serializing_if = "HashMap::is_empty")]
+    pub extensions: HashMap<Extension, Value>,
 }
 
 impl Service {
@@ -148,7 +148,7 @@ pub enum EnvFile {
 #[serde(untagged)]
 pub enum DependsOnOptions {
     Simple(Vec<String>),
-    Conditional(IndexMap<String, DependsCondition>),
+    Conditional(HashMap<String, DependsCondition>),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
@@ -173,7 +173,7 @@ pub struct LoggingParameterOptions {
 #[serde(untagged)]
 pub enum Environment {
     List(Vec<String>),
-    KvPair(IndexMap<String, Option<String>>),
+    KvPair(HashMap<String, Option<String>>),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Hash)]
@@ -223,10 +223,10 @@ impl fmt::Display for ExtensionParseError {
 impl std::error::Error for ExtensionParseError {}
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
-pub struct Services(pub IndexMap<String, Option<Service>>);
+pub struct Services(pub HashMap<String, Option<Service>>);
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-pub struct Labels(pub IndexMap<String, String>);
+pub struct Labels(pub HashMap<String, String>);
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
@@ -273,11 +273,11 @@ pub struct AdvancedBuildStep {
 pub enum BuildArgs {
     Simple(String),
     List(Vec<String>),
-    KvPair(IndexMap<String, String>),
+    KvPair(HashMap<String, String>),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-pub struct AdvancedNetworks(pub IndexMap<String, Option<AdvancedNetworkSettings>>);
+pub struct AdvancedNetworks(pub HashMap<String, Option<AdvancedNetworkSettings>>);
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
@@ -286,7 +286,7 @@ pub struct AdvancedNetworkSettings {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-pub struct ComposeVolumes(pub IndexMap<String, Option<IndexMap<String, String>>>);
+pub struct ComposeVolumes(pub HashMap<String, Option<HashMap<String, String>>>);
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(untagged)]
@@ -296,21 +296,21 @@ pub enum TopLevelVolumes {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-pub struct LabelledComposeVolumes(pub IndexMap<String, VolumeLabels>);
+pub struct LabelledComposeVolumes(pub HashMap<String, VolumeLabels>);
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct VolumeLabels {
-    labels: IndexMap<String, String>,
+    labels: HashMap<String, String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-pub struct ComposeNetworks(pub IndexMap<String, NetworkSettingsOptions>);
+pub struct ComposeNetworks(pub HashMap<String, NetworkSettingsOptions>);
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(untagged)]
 pub enum NetworkSettingsOptions {
     Settings(NetworkSettings),
-    Empty(IndexMap<(), ()>),
+    Empty(HashMap<(), ()>),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
