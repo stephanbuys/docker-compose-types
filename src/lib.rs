@@ -265,7 +265,7 @@ pub struct AdvancedBuildStep {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub args: Option<BuildArgs>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    shm_size: Option<u64>,
+    pub shm_size: Option<u64>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
