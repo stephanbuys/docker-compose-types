@@ -17,7 +17,7 @@ pub enum ComposeFile {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
 pub struct SingleService {
-    service: Service,
+    pub service: Service,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
@@ -300,7 +300,7 @@ pub struct LabelledComposeVolumes(pub IndexMap<String, VolumeLabels>);
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct VolumeLabels {
-    labels: IndexMap<String, String>,
+    pub labels: IndexMap<String, String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
