@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## v0.2.1
+(Thanks to Thomas Da Rocha)
+- make remaining fields of note visible
+
 ## v0.2.0
 (Thanks to Atk)
 - Remove anyhow, provide own error type for TryFrom
