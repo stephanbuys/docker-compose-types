@@ -1,6 +1,9 @@
 use derive_builder::*;
+#[cfg(feature = "indexmap")]
+use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
+#[cfg(not(feature = "indexmap"))]
 use std::collections::HashMap;
 use std::convert::TryFrom;
 use std::fmt;
@@ -11,6 +14,9 @@ use std::str::FromStr;
 #[serde(untagged)]
 pub enum ComposeFile {
     V2Plus(Compose),
+    #[cfg(feature = "indexmap")]
+    V1(IndexMap<String, Service>),
+    #[cfg(not(feature = "indexmap"))]
     V1(HashMap<String, Service>),
     Single(SingleService),
 }
@@ -32,6 +38,10 @@ pub struct Compose {
     pub networks: Option<ComposeNetworks>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub service: Option<Service>,
+    #[cfg(feature = "indexmap")]
+    #[serde(flatten, skip_serializing_if = "IndexMap::is_empty")]
+    pub extensions: IndexMap<Extension, Value>,
+    #[cfg(not(feature = "indexmap"))]
     #[serde(flatten, skip_serializing_if = "HashMap::is_empty")]
     pub extensions: HashMap<Extension, Value>,
 }
@@ -111,6 +121,10 @@ pub struct Service {
     pub expose: Vec<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub volumes_from: Vec<String>,
+    #[cfg(feature = "indexmap")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extends: Option<IndexMap<String, String>>,
+    #[cfg(not(feature = "indexmap"))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extends: Option<HashMap<String, String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -123,6 +137,10 @@ pub struct Service {
     pub stdin_open: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub shm_size: Option<String>,
+    #[cfg(feature = "indexmap")]
+    #[serde(flatten, skip_serializing_if = "IndexMap::is_empty")]
+    pub extensions: IndexMap<Extension, Value>,
+    #[cfg(not(feature = "indexmap"))]
     #[serde(flatten, skip_serializing_if = "HashMap::is_empty")]
     pub extensions: HashMap<Extension, Value>,
 }
@@ -148,6 +166,9 @@ pub enum EnvFile {
 #[serde(untagged)]
 pub enum DependsOnOptions {
     Simple(Vec<String>),
+    #[cfg(feature = "indexmap")]
+    Conditional(IndexMap<String, DependsCondition>),
+    #[cfg(not(feature = "indexmap"))]
     Conditional(HashMap<String, DependsCondition>),
 }
 
@@ -173,6 +194,9 @@ pub struct LoggingParameterOptions {
 #[serde(untagged)]
 pub enum Environment {
     List(Vec<String>),
+    #[cfg(feature = "indexmap")]
+    KvPair(IndexMap<String, Option<String>>),
+    #[cfg(not(feature = "indexmap"))]
     KvPair(HashMap<String, Option<String>>),
 }
 
@@ -222,9 +246,17 @@ impl fmt::Display for ExtensionParseError {
 
 impl std::error::Error for ExtensionParseError {}
 
+#[cfg(feature = "indexmap")]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct Services(pub IndexMap<String, Option<Service>>);
+#[cfg(not(feature = "indexmap"))]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Services(pub HashMap<String, Option<Service>>);
 
+#[cfg(feature = "indexmap")]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+pub struct Labels(pub IndexMap<String, String>);
+#[cfg(not(feature = "indexmap"))]
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct Labels(pub HashMap<String, String>);
 
@@ -273,9 +305,16 @@ pub struct AdvancedBuildStep {
 pub enum BuildArgs {
     Simple(String),
     List(Vec<String>),
+    #[cfg(feature = "indexmap")]
+    KvPair(IndexMap<String, String>),
+    #[cfg(not(feature = "indexmap"))]
     KvPair(HashMap<String, String>),
 }
 
+#[cfg(feature = "indexmap")]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+pub struct AdvancedNetworks(pub IndexMap<String, Option<AdvancedNetworkSettings>>);
+#[cfg(not(feature = "indexmap"))]
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct AdvancedNetworks(pub HashMap<String, Option<AdvancedNetworkSettings>>);
 
@@ -285,6 +324,10 @@ pub struct AdvancedNetworkSettings {
     pub ipv4_address: String,
 }
 
+#[cfg(feature = "indexmap")]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+pub struct ComposeVolumes(pub IndexMap<String, Option<IndexMap<String, String>>>);
+#[cfg(not(feature = "indexmap"))]
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct ComposeVolumes(pub HashMap<String, Option<HashMap<String, String>>>);
 
@@ -295,14 +338,26 @@ pub enum TopLevelVolumes {
     Labelled(LabelledComposeVolumes),
 }
 
+#[cfg(feature = "indexmap")]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+pub struct LabelledComposeVolumes(pub IndexMap<String, VolumeLabels>);
+#[cfg(not(feature = "indexmap"))]
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct LabelledComposeVolumes(pub HashMap<String, VolumeLabels>);
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct VolumeLabels {
+    #[cfg(feature = "indexmap")]
+    pub labels: IndexMap<String, String>,
+    #[cfg(not(feature = "indexmap"))]
     pub labels: HashMap<String, String>,
 }
 
+#[cfg(feature = "indexmap")]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+pub struct ComposeNetworks(pub IndexMap<String, NetworkSettingsOptions>);
+
+#[cfg(not(feature = "indexmap"))]
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct ComposeNetworks(pub HashMap<String, NetworkSettingsOptions>);
 
@@ -310,6 +365,9 @@ pub struct ComposeNetworks(pub HashMap<String, NetworkSettingsOptions>);
 #[serde(untagged)]
 pub enum NetworkSettingsOptions {
     Settings(NetworkSettings),
+    #[cfg(feature = "indexmap")]
+    Empty(IndexMap<(), ()>),
+    #[cfg(not(feature = "indexmap"))]
     Empty(HashMap<(), ()>),
 }
 
