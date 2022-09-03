@@ -17,7 +17,7 @@ pub enum ComposeFile {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
 pub struct SingleService {
-    service: Service,
+    pub service: Service,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
@@ -265,7 +265,7 @@ pub struct AdvancedBuildStep {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub args: Option<BuildArgs>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    shm_size: Option<u64>,
+    pub shm_size: Option<u64>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
@@ -300,7 +300,7 @@ pub struct LabelledComposeVolumes(pub HashMap<String, VolumeLabels>);
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct VolumeLabels {
-    labels: HashMap<String, String>,
+    pub labels: HashMap<String, String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
