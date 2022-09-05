@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## v0.2.2
+(Thanks to Thomas Da Rocha)
+- make the indexmap dependency optional
+
 ## v0.2.1
 (Thanks to Thomas Da Rocha)
 - make remaining fields of note visible
