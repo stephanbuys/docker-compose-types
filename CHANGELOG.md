@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## v0.2.4
+(Thanks to Thomas Da Rocha)
+- Handle healthcheck start_period field
+
 ## v0.2.2
 (Thanks to Thomas Da Rocha)
 - make the indexmap dependency optional
