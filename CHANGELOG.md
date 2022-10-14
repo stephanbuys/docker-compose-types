@@ -1,6 +1,9 @@
 Changelog
 =========
 
+## v0.2.5
+- Update outdated dependencies
+
 ## v0.2.4
 (Thanks to Thomas Da Rocha)
 - Handle healthcheck start_period field
