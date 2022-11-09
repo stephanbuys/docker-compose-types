@@ -7,3 +7,7 @@ services:
     environment:
       foo: bar
       hello: world
+      bool: true
+      integer: 123
+      float: 123.456
+      zilch: null

@@ -190,14 +190,14 @@ pub struct LoggingParameterOptions {
     pub max_size: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(untagged)]
 pub enum Environment {
     List(Vec<String>),
     #[cfg(feature = "indexmap")]
-    KvPair(IndexMap<String, Option<String>>),
+    KvPair(IndexMap<String, Option<EnvTypes>>),
     #[cfg(not(feature = "indexmap"))]
-    KvPair(HashMap<String, Option<String>>),
+    KvPair(HashMap<String, Option<EnvTypes>>),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Hash)]
@@ -205,6 +205,8 @@ pub enum Environment {
 pub enum EnvTypes {
     String(String),
     Number(serde_yaml::Number),
+    Bool(bool),
+    Null,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default, Ord, PartialOrd)]
