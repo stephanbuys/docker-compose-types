@@ -298,6 +298,24 @@ pub struct AdvancedBuildStep {
     pub args: Option<BuildArgs>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shm_size: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub target: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub network: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cache_from: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub labels: Option<BuildLabels>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+#[serde(untagged)]
+pub enum BuildLabels {
+    List(Vec<String>),
+    #[cfg(feature = "indexmap")]
+    KvPair(IndexMap<String, Option<String>>),
+    #[cfg(not(feature = "indexmap"))]
+    KvPair(HashMap<String, Option<String>>),
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
