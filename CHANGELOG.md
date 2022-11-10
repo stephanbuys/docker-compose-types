@@ -1,9 +1,13 @@
 Changelog
 =========
 
-## v0.3.0
+## v0.3.1
 (Thanks to Julian Scheid)
 - Add support for additional types of environment variables for a service
+
+## v0.3.0
+(Thanks to Julian Scheid)
+- support for latest build settings
 
 ## v0.2.5
 - Update outdated dependencies
