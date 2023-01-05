@@ -435,18 +435,21 @@ pub struct IpamConfig {
     pub subnet: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
 #[serde(deny_unknown_fields)]
 pub struct Deploy {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub mode: Option<String>,
-    pub replicas: i64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub replicas: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub labels: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub update_config: Option<UpdateConfig>,
-    pub resources: Resources,
-    pub restart_policy: RestartPolicy,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub resources: Option<Resources>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub restart_policy: Option<RestartPolicy>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub placement: Option<Placement>,
 }
@@ -479,7 +482,7 @@ pub enum HealthcheckTest {
     Multiple(Vec<String>),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
 #[serde(deny_unknown_fields)]
 pub struct Limits {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -488,10 +491,12 @@ pub struct Limits {
     pub memory: Option<String>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
 #[serde(deny_unknown_fields)]
 pub struct Placement {
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub constraints: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub preferences: Vec<Preferences>,
 }
 
@@ -501,32 +506,39 @@ pub struct Preferences {
     pub spread: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
 #[serde(deny_unknown_fields)]
 pub struct Resources {
-    pub limits: Limits,
-    pub reservations: Limits,
+    pub limits: Option<Limits>,
+    pub reservations: Option<Limits>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
 #[serde(deny_unknown_fields)]
 pub struct RestartPolicy {
-    pub condition: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub condition: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub delay: Option<String>,
-    pub max_attempts: i64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub max_attempts: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub window: Option<String>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
 #[serde(deny_unknown_fields)]
 pub struct UpdateConfig {
-    pub parallelism: i64,
-    pub delay: String,
-    pub failure_action: String,
-    pub monitor: String,
-    pub max_failure_ratio: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub parallelism: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub delay: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub failure_action: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub monitor: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub max_failure_ratio: Option<f64>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]

@@ -1,0 +1,19 @@
+version: "3.5"
+services:
+  base:
+    healthcheck: {}
+    deploy: {}
+    image: busybox
+  deploy:
+    deploy:
+      update_config: {}
+      resources: {}
+      restart_policy: {}
+      placement: {}
+    image: busybox
+  deploy-resources:
+    deploy:
+      resources:
+        limits: {}
+        reservations: {}
+    image: busybox
