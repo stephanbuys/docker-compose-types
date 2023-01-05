@@ -1,13 +1,19 @@
 Changelog
 =========
 
+## v0.4.0
+(Thanks to Thomas Da Rocha)
+- Add defaults to some types
+- Avoid serializing some additional empty fields
+- Bump minor version as changes are breaking
+
 ## v0.3.1
 (Thanks to Julian Scheid)
 - Add support for additional types of environment variables for a service
 
 ## v0.3.0
 (Thanks to Julian Scheid)
-- support for latest build settings
+- Support for latest build settings
 
 ## v0.2.5
 - Update outdated dependencies
@@ -18,11 +24,11 @@ Changelog
 
 ## v0.2.2
 (Thanks to Thomas Da Rocha)
-- make the indexmap dependency optional
+- Make the indexmap dependency optional
 
 ## v0.2.1
 (Thanks to Thomas Da Rocha)
-- make remaining fields of note visible
+- Make remaining fields of note visible
 
 ## v0.2.0
 (Thanks to Atk)
