@@ -143,6 +143,8 @@ pub struct Service {
     #[cfg(not(feature = "indexmap"))]
     #[serde(flatten, skip_serializing_if = "HashMap::is_empty")]
     pub extensions: HashMap<Extension, Value>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub extra_hosts: Option<Vec<String>>,
 }
 
 impl Service {
