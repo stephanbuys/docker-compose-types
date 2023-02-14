@@ -145,6 +145,9 @@ pub struct Service {
     pub extensions: HashMap<Extension, Value>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extra_hosts: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tty: Option<bool>,
+
 }
 
 impl Service {
