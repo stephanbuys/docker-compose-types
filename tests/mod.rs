@@ -4,7 +4,7 @@ fn parse_compose() {
     use glob::glob;
 
     let mut all_succeeded = true;
-    for entry in glob("tests/fixtures/**/docker-compose.yml")
+    for entry in glob("tests/fixtures/**/*.yml")
         .expect("Failed to read glob pattern")
         .filter_map(Result::ok)
     {
@@ -15,9 +15,14 @@ fn parse_compose() {
         let file_payload = std::fs::read_to_string(&entry).unwrap();
         match serde_yaml::from_str::<ComposeFile>(&file_payload) {
             Ok(_) => {}
-            Err(e) => {
+            Err(_e) => {
                 all_succeeded = false;
-                eprintln!("{} {:?}", entry.display(), e);
+                // The top-level enum for Compose V2 and Compose V3 tends to swallow meaningful errors
+                // so re-parse the file as Compose V3 and print the error
+                if let Err(e) = serde_yaml::from_str::<docker_compose_types::Compose>(&file_payload)
+                {
+                    eprintln!("{} {:?}", entry.display(), e);
+                }
             }
         }
     }
