@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## v0.4.1
+(Thanks to Tom Harper)
+- Add support for extra hosts in services
+- Add tty support
+
 ## v0.4.0
 (Thanks to Thomas Da Rocha)
 - Add defaults to some types
