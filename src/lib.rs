@@ -147,7 +147,6 @@ pub struct Service {
     pub extra_hosts: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tty: Option<bool>,
-
 }
 
 impl Service {
@@ -346,7 +345,9 @@ pub struct AdvancedNetworks(pub HashMap<String, Option<AdvancedNetworkSettings>>
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct AdvancedNetworkSettings {
-    pub ipv4_address: String,
+    pub ipv4_address: Option<String>,
+    pub ipv6_address: Option<String>,
+    pub aliases: Option<Vec<String>>,
 }
 
 #[cfg(feature = "indexmap")]
