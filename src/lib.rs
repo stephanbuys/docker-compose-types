@@ -84,6 +84,8 @@ pub struct Service {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub labels: Option<Labels>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub tmpfs: Option<Tmpfs>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ulimits: Option<Ulimits>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub volumes: Option<Volumes>,
@@ -265,6 +267,13 @@ pub struct Labels(pub IndexMap<String, String>);
 #[cfg(not(feature = "indexmap"))]
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct Labels(pub HashMap<String, String>);
+
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+#[serde(untagged)]
+pub enum Tmpfs {
+    Simple(String),
+    List(Vec<String>),
+}
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
@@ -565,13 +574,29 @@ pub struct AdvancedVolumes {
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub read_only: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bind: Option<Bind>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub volume: Option<Volume>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tmpfs: Option<TmpfsSettings>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
+#[serde(deny_unknown_fields)]
+pub struct Bind {
+    pub propagation: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
 #[serde(deny_unknown_fields)]
 pub struct Volume {
     pub nocopy: bool,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
+#[serde(deny_unknown_fields)]
+pub struct TmpfsSettings {
+    pub size: u64,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
