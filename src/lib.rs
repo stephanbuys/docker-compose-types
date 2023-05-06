@@ -277,17 +277,18 @@ pub enum Tmpfs {
     List(Vec<String>),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
-#[serde(deny_unknown_fields)]
-pub struct Ulimits {
-    pub nofile: Nofile,
-}
+#[cfg(feature = "indexmap")]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+pub struct Ulimits(pub IndexMap<String, Ulimit>);
+#[cfg(not(feature = "indexmap"))]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+pub struct Ulimits(pub HashMap<String, Ulimit>);
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
-#[serde(deny_unknown_fields)]
-pub struct Nofile {
-    pub soft: i64,
-    pub hard: i64,
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+#[serde(untagged)]
+pub enum Ulimit {
+    Single(i64),
+    SoftHard { soft: i64, hard: i64 },
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
