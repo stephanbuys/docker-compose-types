@@ -149,6 +149,8 @@ pub struct Service {
     pub extra_hosts: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tty: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sysctls: Option<SysCtls>,
 }
 
 impl Service {
@@ -357,6 +359,40 @@ pub struct AdvancedNetworkSettings {
     pub ipv4_address: Option<String>,
     pub ipv6_address: Option<String>,
     pub aliases: Option<Vec<String>>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(untagged)]
+pub enum SysCtls {
+    List(Vec<String>),
+    #[cfg(feature = "indexmap")]
+    Map(IndexMap<String, SysCtlValue>),
+    #[cfg(not(feature = "indexmap"))]
+    Map(HashMap<String, SysCtlValue>),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(untagged)]
+pub enum SysCtlValue {
+    Null,
+    String(String),
+    Bool(bool),
+    Unsigned(u64),
+    Signed(i64),
+    Float(f64),
+}
+
+impl fmt::Display for SysCtlValue {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::Null => f.write_str("null"),
+            Self::String(s) => f.write_str(s),
+            Self::Bool(b) => write!(f, "{b}"),
+            Self::Unsigned(u) => write!(f, "{u}"),
+            Self::Signed(i) => write!(f, "{i}"),
+            Self::Float(fl) => write!(f, "{fl}"),
+        }
+    }
 }
 
 #[cfg(feature = "indexmap")]
