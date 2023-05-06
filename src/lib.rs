@@ -151,6 +151,8 @@ pub struct Service {
     pub tty: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sysctls: Option<SysCtls>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub security_opt: Option<Vec<String>>,
 }
 
 impl Service {
