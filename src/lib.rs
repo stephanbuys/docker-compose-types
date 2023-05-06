@@ -187,17 +187,25 @@ pub struct DependsCondition {
     pub condition: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct LoggingParameters {
     pub driver: String,
+    #[cfg(feature = "indexmap")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub options: Option<LoggingParameterOptions>,
+    pub options: Option<IndexMap<String, LoggingOptionValue>>,
+    #[cfg(not(feature = "indexmap"))]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub options: Option<HashMap<String, LoggingOptionValue>>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
-pub struct LoggingParameterOptions {
-    #[serde(rename = "max-size")]
-    pub max_size: String,
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(untagged)]
+pub enum LoggingOptionValue {
+    String(String),
+    Bool(bool),
+    Unsigned(u64),
+    Signed(i64),
+    Float(f64),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
