@@ -359,16 +359,19 @@ pub enum BuildArgs {
 
 #[cfg(feature = "indexmap")]
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-pub struct AdvancedNetworks(pub IndexMap<String, Option<AdvancedNetworkSettings>>);
+pub struct AdvancedNetworks(pub IndexMap<String, MapOrEmpty<AdvancedNetworkSettings>>);
 #[cfg(not(feature = "indexmap"))]
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-pub struct AdvancedNetworks(pub HashMap<String, Option<AdvancedNetworkSettings>>);
+pub struct AdvancedNetworks(pub HashMap<String, MapOrEmpty<AdvancedNetworkSettings>>);
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct AdvancedNetworkSettings {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ipv4_address: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ipv6_address: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub aliases: Option<Vec<String>>,
 }
 
@@ -437,21 +440,11 @@ pub struct VolumeLabels {
 
 #[cfg(feature = "indexmap")]
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-pub struct ComposeNetworks(pub IndexMap<String, NetworkSettingsOptions>);
+pub struct ComposeNetworks(pub IndexMap<String, MapOrEmpty<NetworkSettings>>);
 
 #[cfg(not(feature = "indexmap"))]
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-pub struct ComposeNetworks(pub HashMap<String, NetworkSettingsOptions>);
-
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-#[serde(untagged)]
-pub enum NetworkSettingsOptions {
-    Settings(NetworkSettings),
-    #[cfg(feature = "indexmap")]
-    Empty(IndexMap<(), ()>),
-    #[cfg(not(feature = "indexmap"))]
-    Empty(HashMap<(), ()>),
-}
+pub struct ComposeNetworks(pub HashMap<String, MapOrEmpty<NetworkSettings>>);
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(untagged)]
@@ -658,4 +651,35 @@ pub enum Command {
 pub enum Entrypoint {
     Simple(String),
     List(Vec<String>),
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash)]
+#[serde(untagged)]
+pub enum MapOrEmpty<T> {
+    Map(T),
+    Empty,
+}
+
+impl<T> Default for MapOrEmpty<T> {
+    fn default() -> Self {
+        Self::Empty
+    }
+}
+
+impl<T> Serialize for MapOrEmpty<T>
+where
+    T: Serialize,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        match self {
+            Self::Map(t) => t.serialize(serializer),
+            Self::Empty => {
+                use serde::ser::SerializeMap;
+                serializer.serialize_map(None)?.end()
+            }
+        }
+    }
 }
