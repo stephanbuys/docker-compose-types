@@ -192,20 +192,10 @@ pub struct LoggingParameters {
     pub driver: String,
     #[cfg(feature = "indexmap")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub options: Option<IndexMap<String, LoggingOptionValue>>,
+    pub options: Option<IndexMap<String, SingleValue>>,
     #[cfg(not(feature = "indexmap"))]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub options: Option<HashMap<String, LoggingOptionValue>>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
-#[serde(untagged)]
-pub enum LoggingOptionValue {
-    String(String),
-    Bool(bool),
-    Unsigned(u64),
-    Signed(i64),
-    Float(f64),
+    pub options: Option<HashMap<String, SingleValue>>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
@@ -213,18 +203,9 @@ pub enum LoggingOptionValue {
 pub enum Environment {
     List(Vec<String>),
     #[cfg(feature = "indexmap")]
-    KvPair(IndexMap<String, Option<EnvTypes>>),
+    KvPair(IndexMap<String, Option<SingleValue>>),
     #[cfg(not(feature = "indexmap"))]
-    KvPair(HashMap<String, Option<EnvTypes>>),
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Hash)]
-#[serde(untagged)]
-pub enum EnvTypes {
-    String(String),
-    Number(serde_yaml::Number),
-    Bool(bool),
-    Null,
+    KvPair(HashMap<String, Option<SingleValue>>),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default, Ord, PartialOrd)]
@@ -380,33 +361,9 @@ pub struct AdvancedNetworkSettings {
 pub enum SysCtls {
     List(Vec<String>),
     #[cfg(feature = "indexmap")]
-    Map(IndexMap<String, SysCtlValue>),
+    Map(IndexMap<String, Option<SingleValue>>),
     #[cfg(not(feature = "indexmap"))]
-    Map(HashMap<String, SysCtlValue>),
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
-#[serde(untagged)]
-pub enum SysCtlValue {
-    Null,
-    String(String),
-    Bool(bool),
-    Unsigned(u64),
-    Signed(i64),
-    Float(f64),
-}
-
-impl fmt::Display for SysCtlValue {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Self::Null => f.write_str("null"),
-            Self::String(s) => f.write_str(s),
-            Self::Bool(b) => write!(f, "{b}"),
-            Self::Unsigned(u) => write!(f, "{u}"),
-            Self::Signed(i) => write!(f, "{i}"),
-            Self::Float(fl) => write!(f, "{fl}"),
-        }
-    }
+    Map(HashMap<String, Option<SingleValue>>),
 }
 
 #[cfg(feature = "indexmap")]
@@ -651,6 +608,28 @@ pub enum Command {
 pub enum Entrypoint {
     Simple(String),
     List(Vec<String>),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, PartialOrd)]
+#[serde(untagged)]
+pub enum SingleValue {
+    String(String),
+    Bool(bool),
+    Unsigned(u64),
+    Signed(i64),
+    Float(f64),
+}
+
+impl fmt::Display for SingleValue {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::String(s) => f.write_str(s),
+            Self::Bool(b) => write!(f, "{b}"),
+            Self::Unsigned(u) => write!(f, "{u}"),
+            Self::Signed(i) => write!(f, "{i}"),
+            Self::Float(fl) => write!(f, "{fl}"),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash)]
