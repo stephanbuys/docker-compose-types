@@ -254,12 +254,15 @@ pub struct Services(pub IndexMap<String, Option<Service>>);
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Services(pub HashMap<String, Option<Service>>);
 
-#[cfg(feature = "indexmap")]
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-pub struct Labels(pub IndexMap<String, String>);
-#[cfg(not(feature = "indexmap"))]
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-pub struct Labels(pub HashMap<String, String>);
+#[serde(untagged)]
+pub enum Labels {
+    List(Vec<String>),
+    #[cfg(feature = "indexmap")]
+    Map(IndexMap<String, String>),
+    #[cfg(not(feature = "indexmap"))]
+    Map(HashMap<String, String>),
+}
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(untagged)]
@@ -314,17 +317,7 @@ pub struct AdvancedBuildStep {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cache_from: Option<Vec<String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub labels: Option<BuildLabels>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-#[serde(untagged)]
-pub enum BuildLabels {
-    List(Vec<String>),
-    #[cfg(feature = "indexmap")]
-    KvPair(IndexMap<String, Option<String>>),
-    #[cfg(not(feature = "indexmap"))]
-    KvPair(HashMap<String, Option<String>>),
+    pub labels: Option<Labels>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
