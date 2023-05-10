@@ -396,11 +396,11 @@ pub struct VolumeLabels {
 }
 
 #[cfg(feature = "indexmap")]
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ComposeNetworks(pub IndexMap<String, MapOrEmpty<NetworkSettings>>);
 
 #[cfg(not(feature = "indexmap"))]
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ComposeNetworks(pub HashMap<String, MapOrEmpty<NetworkSettings>>);
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
@@ -420,24 +420,39 @@ pub struct ComposeNetworkSettingDetails {
 #[serde(deny_unknown_fields)]
 pub struct ExternalNetworkSettingBool(bool);
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
 #[serde(deny_unknown_fields)]
 pub struct NetworkSettings {
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub attachable: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub driver: Option<String>,
+    #[cfg(feature = "indexmap")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub internal: Option<ComposeNetwork>,
+    pub driver_opts: Option<IndexMap<String, Option<SingleValue>>>,
+    #[cfg(not(feature = "indexmap"))]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub driver_opts: Option<HashMap<String, Option<SingleValue>>>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub enable_ipv6: bool,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub internal: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub external: Option<ComposeNetwork>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ipam: Option<Ipam>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub labels: Option<Labels>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct Ipam {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub driver: Option<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub config: Vec<IpamConfig>,
 }
 
