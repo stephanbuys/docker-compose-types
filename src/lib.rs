@@ -77,8 +77,8 @@ pub struct Service {
     pub environment: Option<Environment>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub network_mode: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub devices: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub devices: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub restart: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -91,8 +91,8 @@ pub struct Service {
     pub volumes: Option<Volumes>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub networks: Option<Networks>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub cap_add: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub cap_add: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub depends_on: Option<DependsOnOptions>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -103,12 +103,12 @@ pub struct Service {
     pub env_file: Option<EnvFile>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stop_grace_period: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub profiles: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub links: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub dns: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub profiles: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub links: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub dns: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ipc: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -145,14 +145,14 @@ pub struct Service {
     #[cfg(not(feature = "indexmap"))]
     #[serde(flatten, skip_serializing_if = "HashMap::is_empty")]
     pub extensions: HashMap<Extension, Value>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub extra_hosts: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub extra_hosts: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tty: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sysctls: Option<SysCtls>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub security_opt: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub security_opt: Vec<String>,
 }
 
 impl Service {
@@ -353,8 +353,8 @@ pub struct AdvancedBuildStep {
     pub target: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub network: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub cache_from: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub cache_from: Vec<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub labels: Option<Labels>,
 }
@@ -384,8 +384,8 @@ pub struct AdvancedNetworkSettings {
     pub ipv4_address: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ipv6_address: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub aliases: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub aliases: Vec<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
@@ -501,8 +501,8 @@ pub struct Deploy {
     pub mode: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub replicas: Option<i64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub labels: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub labels: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub update_config: Option<UpdateConfig>,
     #[serde(skip_serializing_if = "Option::is_none")]
