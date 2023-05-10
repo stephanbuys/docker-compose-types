@@ -71,8 +71,8 @@ pub struct Service {
     pub build_: Option<BuildStep>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pid: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ports: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Ports::is_empty")]
+    pub ports: Ports,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub environment: Option<Environment>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -196,6 +196,45 @@ pub struct LoggingParameters {
     #[cfg(not(feature = "indexmap"))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub options: Option<HashMap<String, SingleValue>>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(untagged)]
+pub enum Ports {
+    Short(Vec<String>),
+    Long(Vec<Port>),
+}
+
+impl Default for Ports {
+    fn default() -> Self {
+        Self::Short(Vec::default())
+    }
+}
+
+impl Ports {
+    pub fn is_empty(&self) -> bool {
+        match self {
+            Self::Short(v) => v.is_empty(),
+            Self::Long(v) => v.is_empty(),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct Port {
+    pub target: u16,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub host_ip: Option<String>,
+    pub published: PublishedPort,
+    pub protocol: String,
+    pub mode: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(untagged)]
+pub enum PublishedPort {
+    Single(u16),
+    Range(String),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
