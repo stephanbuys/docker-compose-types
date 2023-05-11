@@ -9,19 +9,27 @@ fn parse_compose() {
         .filter_map(Result::ok)
     {
         // Can't figure out why this specific file fails on the top-level enum, it passed on the test below
-        if entry.display().to_string().contains("v3-full") {
+        let entry_path = entry.display().to_string();
+        if entry_path.contains("v3-full") {
             continue;
         }
+        let is_invalid = entry_path.contains("invalid.yml");
         let file_payload = std::fs::read_to_string(&entry).unwrap();
         match serde_yaml::from_str::<ComposeFile>(&file_payload) {
+            Ok(_) if is_invalid => {
+                // invalid compose file succeeded in being parsed
+                all_succeeded = false;
+                eprintln!("{entry_path} is an invalid compose file but was successfully parsed");
+            }
             Ok(_) => {}
-            Err(_e) => {
+            Err(_) if is_invalid => {}
+            Err(_) => {
                 all_succeeded = false;
                 // The top-level enum for Compose V2 and Compose V3 tends to swallow meaningful errors
                 // so re-parse the file as Compose V3 and print the error
                 if let Err(e) = serde_yaml::from_str::<docker_compose_types::Compose>(&file_payload)
                 {
-                    eprintln!("{} {:?}", entry.display(), e);
+                    eprintln!("{entry_path} {e:?}");
                 }
             }
         }
