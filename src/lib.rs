@@ -225,9 +225,12 @@ pub struct Port {
     pub target: u16,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub host_ip: Option<String>,
-    pub published: PublishedPort,
-    pub protocol: String,
-    pub mode: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub published: Option<PublishedPort>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub protocol: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mode: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
@@ -415,12 +418,19 @@ pub struct ComposeVolume {
     #[cfg(not(feature = "indexmap"))]
     #[serde(default, skip_serializing_if = "HashMap::is_empty")]
     pub driver_opts: HashMap<String, Option<SingleValue>>,
-    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-    pub external: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub external: Option<ExternalVolume>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub labels: Option<Labels>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(untagged)]
+pub enum ExternalVolume {
+    Bool(bool),
+    Name { name: String },
 }
 
 #[cfg(feature = "indexmap")]
@@ -488,6 +498,8 @@ pub struct Ipam {
 #[serde(deny_unknown_fields)]
 pub struct IpamConfig {
     pub subnet: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub gateway: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
