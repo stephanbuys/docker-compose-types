@@ -399,32 +399,28 @@ pub enum SysCtls {
 }
 
 #[cfg(feature = "indexmap")]
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-pub struct ComposeVolumes(pub IndexMap<String, Option<IndexMap<String, String>>>);
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct TopLevelVolumes(IndexMap<String, MapOrEmpty<ComposeVolume>>);
 #[cfg(not(feature = "indexmap"))]
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-pub struct ComposeVolumes(pub HashMap<String, Option<HashMap<String, String>>>);
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct TopLevelVolumes(HashMap<String, MapOrEmpty<ComposeVolume>>);
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-#[serde(untagged)]
-pub enum TopLevelVolumes {
-    CV(ComposeVolumes),
-    Labelled(LabelledComposeVolumes),
-}
-
-#[cfg(feature = "indexmap")]
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-pub struct LabelledComposeVolumes(pub IndexMap<String, VolumeLabels>);
-#[cfg(not(feature = "indexmap"))]
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-pub struct LabelledComposeVolumes(pub HashMap<String, VolumeLabels>);
-
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
-pub struct VolumeLabels {
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct ComposeVolume {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub driver: Option<String>,
     #[cfg(feature = "indexmap")]
-    pub labels: IndexMap<String, String>,
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub driver_opts: IndexMap<String, Option<SingleValue>>,
     #[cfg(not(feature = "indexmap"))]
-    pub labels: HashMap<String, String>,
+    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
+    pub driver_opts: HashMap<String, Option<SingleValue>>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub external: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub labels: Option<Labels>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
 }
 
 #[cfg(feature = "indexmap")]
