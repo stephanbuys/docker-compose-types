@@ -30,12 +30,12 @@ pub struct SingleService {
 pub struct Compose {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub services: Option<Services>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub volumes: Option<TopLevelVolumes>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub networks: Option<ComposeNetworks>,
+    #[serde(default, skip_serializing_if = "Services::is_empty")]
+    pub services: Services,
+    #[serde(default, skip_serializing_if = "TopLevelVolumes::is_empty")]
+    pub volumes: TopLevelVolumes,
+    #[serde(default, skip_serializing_if = "ComposeNetworks::is_empty")]
+    pub networks: ComposeNetworks,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub service: Option<Service>,
     #[cfg(feature = "indexmap")]
@@ -73,28 +73,28 @@ pub struct Service {
     pub pid: Option<String>,
     #[serde(default, skip_serializing_if = "Ports::is_empty")]
     pub ports: Ports,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub environment: Option<Environment>,
+    #[serde(default, skip_serializing_if = "Environment::is_empty")]
+    pub environment: Environment,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub network_mode: Option<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub devices: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub restart: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub labels: Option<Labels>,
+    #[serde(default, skip_serializing_if = "Labels::is_empty")]
+    pub labels: Labels,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tmpfs: Option<Tmpfs>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ulimits: Option<Ulimits>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub volumes: Option<Volumes>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub networks: Option<Networks>,
+    #[serde(default, skip_serializing_if = "Ulimits::is_empty")]
+    pub ulimits: Ulimits,
+    #[serde(default, skip_serializing_if = "Volumes::is_empty")]
+    pub volumes: Volumes,
+    #[serde(default, skip_serializing_if = "Networks::is_empty")]
+    pub networks: Networks,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cap_add: Vec<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub depends_on: Option<DependsOnOptions>,
+    #[serde(default, skip_serializing_if = "DependsOnOptions::is_empty")]
+    pub depends_on: DependsOnOptions,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub command: Option<Command>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -124,11 +124,11 @@ pub struct Service {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub volumes_from: Vec<String>,
     #[cfg(feature = "indexmap")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub extends: Option<IndexMap<String, String>>,
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub extends: IndexMap<String, String>,
     #[cfg(not(feature = "indexmap"))]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub extends: Option<HashMap<String, String>>,
+    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
+    pub extends: HashMap<String, String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub logging: Option<LoggingParameters>,
     #[serde(default, skip_serializing_if = "is_zero")]
@@ -147,10 +147,10 @@ pub struct Service {
     pub extensions: HashMap<Extension, Value>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub extra_hosts: Vec<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tty: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub sysctls: Option<SysCtls>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub tty: bool,
+    #[serde(default, skip_serializing_if = "SysCtls::is_empty")]
+    pub sysctls: SysCtls,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub security_opt: Vec<String>,
 }
@@ -180,6 +180,21 @@ pub enum DependsOnOptions {
     Conditional(IndexMap<String, DependsCondition>),
     #[cfg(not(feature = "indexmap"))]
     Conditional(HashMap<String, DependsCondition>),
+}
+
+impl Default for DependsOnOptions {
+    fn default() -> Self {
+        Self::Simple(Vec::new())
+    }
+}
+
+impl DependsOnOptions {
+    pub fn is_empty(&self) -> bool {
+        match self {
+            Self::Simple(v) => v.is_empty(),
+            Self::Conditional(m) => m.is_empty(),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
@@ -250,6 +265,21 @@ pub enum Environment {
     KvPair(HashMap<String, Option<SingleValue>>),
 }
 
+impl Default for Environment {
+    fn default() -> Self {
+        Self::List(Vec::new())
+    }
+}
+
+impl Environment {
+    pub fn is_empty(&self) -> bool {
+        match self {
+            Self::List(v) => v.is_empty(),
+            Self::KvPair(m) => m.is_empty(),
+        }
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default, Ord, PartialOrd)]
 #[serde(try_from = "String")]
 pub struct Extension(String);
@@ -290,11 +320,17 @@ impl fmt::Display for ExtensionParseError {
 impl std::error::Error for ExtensionParseError {}
 
 #[cfg(feature = "indexmap")]
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Services(pub IndexMap<String, Option<Service>>);
 #[cfg(not(feature = "indexmap"))]
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Services(pub HashMap<String, Option<Service>>);
+
+impl Services {
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(untagged)]
@@ -306,6 +342,21 @@ pub enum Labels {
     Map(HashMap<String, String>),
 }
 
+impl Default for Labels {
+    fn default() -> Self {
+        Self::List(Vec::new())
+    }
+}
+
+impl Labels {
+    pub fn is_empty(&self) -> bool {
+        match self {
+            Self::List(v) => v.is_empty(),
+            Self::Map(m) => m.is_empty(),
+        }
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(untagged)]
 pub enum Tmpfs {
@@ -314,11 +365,17 @@ pub enum Tmpfs {
 }
 
 #[cfg(feature = "indexmap")]
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct Ulimits(pub IndexMap<String, Ulimit>);
 #[cfg(not(feature = "indexmap"))]
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct Ulimits(pub HashMap<String, Ulimit>);
+
+impl Ulimits {
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(untagged)]
@@ -332,6 +389,21 @@ pub enum Ulimit {
 pub enum Networks {
     Simple(Vec<String>),
     Advanced(AdvancedNetworks),
+}
+
+impl Default for Networks {
+    fn default() -> Self {
+        Self::Simple(Vec::new())
+    }
+}
+
+impl Networks {
+    pub fn is_empty(&self) -> bool {
+        match self {
+            Self::Simple(n) => n.is_empty(),
+            Self::Advanced(n) => n.0.is_empty(),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
@@ -358,8 +430,8 @@ pub struct AdvancedBuildStep {
     pub network: Option<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cache_from: Vec<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub labels: Option<Labels>,
+    #[serde(default, skip_serializing_if = "Labels::is_empty")]
+    pub labels: Labels,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
@@ -374,10 +446,10 @@ pub enum BuildArgs {
 }
 
 #[cfg(feature = "indexmap")]
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct AdvancedNetworks(pub IndexMap<String, MapOrEmpty<AdvancedNetworkSettings>>);
 #[cfg(not(feature = "indexmap"))]
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, Eq, PartialEq)]
 pub struct AdvancedNetworks(pub HashMap<String, MapOrEmpty<AdvancedNetworkSettings>>);
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Eq, PartialEq, Hash)]
@@ -401,12 +473,33 @@ pub enum SysCtls {
     Map(HashMap<String, Option<SingleValue>>),
 }
 
+impl Default for SysCtls {
+    fn default() -> Self {
+        Self::List(Vec::new())
+    }
+}
+
+impl SysCtls {
+    pub fn is_empty(&self) -> bool {
+        match self {
+            Self::List(v) => v.is_empty(),
+            Self::Map(m) => m.is_empty(),
+        }
+    }
+}
+
 #[cfg(feature = "indexmap")]
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct TopLevelVolumes(IndexMap<String, MapOrEmpty<ComposeVolume>>);
 #[cfg(not(feature = "indexmap"))]
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct TopLevelVolumes(HashMap<String, MapOrEmpty<ComposeVolume>>);
+
+impl TopLevelVolumes {
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ComposeVolume {
@@ -420,8 +513,8 @@ pub struct ComposeVolume {
     pub driver_opts: HashMap<String, Option<SingleValue>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub external: Option<ExternalVolume>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub labels: Option<Labels>,
+    #[serde(default, skip_serializing_if = "Labels::is_empty")]
+    pub labels: Labels,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
 }
@@ -434,12 +527,18 @@ pub enum ExternalVolume {
 }
 
 #[cfg(feature = "indexmap")]
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ComposeNetworks(pub IndexMap<String, MapOrEmpty<NetworkSettings>>);
 
 #[cfg(not(feature = "indexmap"))]
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ComposeNetworks(pub HashMap<String, MapOrEmpty<NetworkSettings>>);
+
+impl ComposeNetworks {
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(untagged)]
@@ -466,11 +565,11 @@ pub struct NetworkSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub driver: Option<String>,
     #[cfg(feature = "indexmap")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub driver_opts: Option<IndexMap<String, Option<SingleValue>>>,
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub driver_opts: IndexMap<String, Option<SingleValue>>,
     #[cfg(not(feature = "indexmap"))]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub driver_opts: Option<HashMap<String, Option<SingleValue>>>,
+    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
+    pub driver_opts: HashMap<String, Option<SingleValue>>,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub enable_ipv6: bool,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
@@ -479,8 +578,8 @@ pub struct NetworkSettings {
     pub external: Option<ComposeNetwork>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ipam: Option<Ipam>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub labels: Option<Labels>,
+    #[serde(default, skip_serializing_if = "Labels::is_empty")]
+    pub labels: Labels,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
 }
@@ -613,6 +712,21 @@ pub struct UpdateConfig {
 pub enum Volumes {
     Simple(Vec<String>),
     Advanced(Vec<AdvancedVolumes>),
+}
+
+impl Default for Volumes {
+    fn default() -> Self {
+        Self::Simple(Vec::new())
+    }
+}
+
+impl Volumes {
+    pub fn is_empty(&self) -> bool {
+        match self {
+            Self::Simple(v) => v.is_empty(),
+            Self::Advanced(v) => v.is_empty(),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
