@@ -814,6 +814,15 @@ impl<T> Default for MapOrEmpty<T> {
     }
 }
 
+impl<T> From<MapOrEmpty<T>> for Option<T> {
+    fn from(value: MapOrEmpty<T>) -> Self {
+        match value {
+            MapOrEmpty::Map(t) => Some(t),
+            MapOrEmpty::Empty => None,
+        }
+    }
+}
+
 impl<T> Serialize for MapOrEmpty<T>
 where
     T: Serialize,
