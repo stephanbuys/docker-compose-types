@@ -1,6 +1,19 @@
 Changelog
 =========
 
+## v0.5.0
+(Thanks to Paul Nettleton)
+- Add `tmpfs: Option<Tmpfs>` to `Service`
+- Add `bind: Option<Bind>` and `tmpfs: Option<TmpfsSettings>` to `AdvancedVolumes` for bind and tmpfs volume options
+- Add enums `SysCtls` and `SysCtlValue` to support `sysctls` option
+- Add `Ulimit` enum for single value ulimit and soft/hard mapping
+- Makes field `options` on `LoggingParameters` a map
+- Add `driver_opts`, `enable_ipv6`, `labels`, and `name` to `NetworkSettings`
+- Change `internal` to bool
+- Add `driver` to `Ipam`
+.. 
+and many more fixes and changes, thanks Paul!
+
 ## v0.4.1
 (Thanks to Tom Harper)
 - Add support for extra hosts in services
