@@ -490,10 +490,10 @@ impl SysCtls {
 
 #[cfg(feature = "indexmap")]
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
-pub struct TopLevelVolumes(IndexMap<String, MapOrEmpty<ComposeVolume>>);
+pub struct TopLevelVolumes(pub IndexMap<String, MapOrEmpty<ComposeVolume>>);
 #[cfg(not(feature = "indexmap"))]
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
-pub struct TopLevelVolumes(HashMap<String, MapOrEmpty<ComposeVolume>>);
+pub struct TopLevelVolumes(pub HashMap<String, MapOrEmpty<ComposeVolume>>);
 
 impl TopLevelVolumes {
     pub fn is_empty(&self) -> bool {
