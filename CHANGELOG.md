@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## v0.5.1
+(Thanks to Paul Nettleton)
+- Fix  top-level volumes visibility
+
 ## v0.5.0
 (Thanks to Paul Nettleton)
 - Add `tmpfs: Option<Tmpfs>` to `Service`
