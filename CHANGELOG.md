@@ -1,6 +1,9 @@
 Changelog
 =========
 
+## v0.5.2
+- Bump IndexMap dependency to 2.0.0
+
 ## v0.5.1
 (Thanks to Paul Nettleton)
 - Fix  top-level volumes visibility
