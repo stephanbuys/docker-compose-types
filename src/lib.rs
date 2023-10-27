@@ -38,6 +38,8 @@ pub struct Compose {
     pub networks: ComposeNetworks,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub service: Option<Service>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub secrets: Option<ComposeSecrets>,
     #[cfg(feature = "indexmap")]
     #[serde(flatten, skip_serializing_if = "IndexMap::is_empty")]
     pub extensions: IndexMap<Extension, Value>,
@@ -153,6 +155,8 @@ pub struct Service {
     pub sysctls: SysCtls,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub security_opt: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub secrets: Option<Secrets>,
 }
 
 impl Service {
@@ -706,6 +710,63 @@ pub struct UpdateConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub max_failure_ratio: Option<f64>,
 }
+
+#[cfg(feature = "indexmap")]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
+pub struct ComposeSecrets(pub IndexMap<String, Option<ComposeSecret>>);
+#[cfg(not(feature = "indexmap"))]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
+pub struct ComposeSecrets(pub HashMap<String, Option<ComposeSecret>>);
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
+#[serde(deny_unknown_fields)]
+pub struct ComposeSecret {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub file: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub environment: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub external: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[serde(untagged)]
+pub enum Secrets {
+    Simple(Vec<String>),
+    Advanced(Vec<AdvancedSecrets>),
+}
+
+impl Default for Secrets {
+    fn default() -> Self {
+        Self::Simple(Vec::new())
+    }
+}
+
+impl Secrets {
+    pub fn is_empty(&self) -> bool {
+        match self {
+            Self::Simple(v) => v.is_empty(),
+            Self::Advanced(v) => v.is_empty(),
+        }
+    }
+}
+
+#[derive(Clone, Default, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[serde(deny_unknown_fields)]
+pub struct AdvancedSecrets {
+    pub source: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub target: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub uid: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub gid: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mode: Option<String>,
+}
+
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(untagged)]

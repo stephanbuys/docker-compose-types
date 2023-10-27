@@ -2,6 +2,7 @@
 fn parse_compose() {
     use docker_compose_types::ComposeFile;
     use glob::glob;
+    use std::path::MAIN_SEPARATOR;
 
     let mut all_succeeded = true;
     for entry in glob("tests/fixtures/**/*.yml")
@@ -12,10 +13,10 @@ fn parse_compose() {
         let entry_path = entry.display().to_string();
 
         let skip_list = vec![
-            "v3-full",
-            "extends\\verbose-and-shorthand.yml",
-            "net-container\\v2-invalid.yml",
-            "v2-simple\\links-invalid.yml",
+            format!("v3-full"),
+            format!("extends{MAIN_SEPARATOR}verbose-and-shorthand.yml"),
+            format!("net-container{MAIN_SEPARATOR}v2-invalid.yml"),
+            format!("v2-simple{MAIN_SEPARATOR}links-invalid.yml"),
         ];
 
         if skip_list.iter().any(|s| entry_path.contains(s)) {
