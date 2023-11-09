@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## v0.6.0
+(Thanks to Andrew Thorburn)
+- Introduce secrets
+- Bump IndexMap dependency to 2.1.0
+
 ## v0.5.2
 - Bump IndexMap dependency to 2.0.0
 

@@ -713,10 +713,17 @@ pub struct UpdateConfig {
 
 #[cfg(feature = "indexmap")]
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
-pub struct ComposeSecrets(#[serde(with = "serde_yaml::with::singleton_map_recursive")] pub IndexMap<String, Option<ComposeSecret>>);
+pub struct ComposeSecrets(
+    #[serde(with = "serde_yaml::with::singleton_map_recursive")]
+    pub  IndexMap<String, Option<ComposeSecret>>,
+);
+
 #[cfg(not(feature = "indexmap"))]
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
-pub struct ComposeSecrets(#[serde(with = "serde_yaml::with::singleton_map_recursive")] pub HashMap<String, Option<ComposeSecret>>);
+pub struct ComposeSecrets(
+    #[serde(with = "serde_yaml::with::singleton_map_recursive")]
+    pub  HashMap<String, Option<ComposeSecret>>,
+);
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields, rename_all = "snake_case")]
@@ -724,7 +731,10 @@ pub enum ComposeSecret {
     File(String),
     Environment(String),
     #[serde(untagged)]
-    External{external: bool, name: String},
+    External {
+        external: bool,
+        name: String,
+    },
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
@@ -762,7 +772,6 @@ pub struct AdvancedSecrets {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mode: Option<String>,
 }
-
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(untagged)]
