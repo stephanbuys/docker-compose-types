@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## v0.6.1
+(Thanks to @cyqsimon for reporting the issue)
+- Resolve issue #31: Cannot mix long syntax and short syntax volume declaration
+
 ## v0.6.0
 (Thanks to Andrew Thorburn)
 - Introduce secrets
