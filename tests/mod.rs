@@ -67,9 +67,7 @@ fn parse_extensions_v3_full() {
     let file_payload =
         std::fs::read_to_string("tests/fixtures/extensions/docker-compose.yml").unwrap();
     match serde_yaml::from_str::<Compose>(&file_payload) {
-        Ok(_c) => {
-            println!("{:#?}", _c)
-        }
+        Ok(_c) => {}
         Err(e) => eprintln!("{:?}", e),
     }
 }
@@ -100,7 +98,7 @@ volumes:
     #[derive(Deserialize)]
     #[allow(dead_code)]
     struct Container {
-        volumes: Volumes,
+        volumes: Vec<Volumes>,
     }
     let _parsed: Container = serde_yaml::from_str(v).unwrap();
 }

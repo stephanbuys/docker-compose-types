@@ -89,8 +89,8 @@ pub struct Service {
     pub tmpfs: Option<Tmpfs>,
     #[serde(default, skip_serializing_if = "Ulimits::is_empty")]
     pub ulimits: Ulimits,
-    #[serde(default, skip_serializing_if = "Volumes::is_empty")]
-    pub volumes: Volumes,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub volumes: Vec<Volumes>,
     #[serde(default, skip_serializing_if = "Networks::is_empty")]
     pub networks: Networks,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -776,23 +776,8 @@ pub struct AdvancedSecrets {
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(untagged)]
 pub enum Volumes {
-    Simple(Vec<String>),
-    Advanced(Vec<AdvancedVolumes>),
-}
-
-impl Default for Volumes {
-    fn default() -> Self {
-        Self::Simple(Vec::new())
-    }
-}
-
-impl Volumes {
-    pub fn is_empty(&self) -> bool {
-        match self {
-            Self::Simple(v) => v.is_empty(),
-            Self::Advanced(v) => v.is_empty(),
-        }
-    }
+    Simple(String),
+    Advanced(AdvancedVolumes),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]

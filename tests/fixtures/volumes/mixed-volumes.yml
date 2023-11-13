@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  frigate:
+    image: ghcr.io/blakeblackshear/frigate:stable
+    volumes:
+      - type: tmpfs
+        target: /tmp/cache
+      - type: bind
+        source: /etc/frigate/config.yml
+        target: /config/config.yml
+      - /etc/frigate/config.yml:/config/config.yml
