@@ -95,6 +95,8 @@ pub struct Service {
     pub networks: Networks,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cap_add: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub cap_drop: Vec<String>,
     #[serde(default, skip_serializing_if = "DependsOnOptions::is_empty")]
     pub depends_on: DependsOnOptions,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -119,6 +121,8 @@ pub struct Service {
     pub stop_signal: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub userns_mode: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub working_dir: Option<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
