@@ -149,6 +149,8 @@ pub struct Service {
     pub extensions: HashMap<Extension, Value>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub extra_hosts: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub group_add: Vec<String>,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub tty: bool,
     #[serde(default, skip_serializing_if = "SysCtls::is_empty")]
