@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## v0.7.0
+(Thanks to @trijpstra-fourlights and @k9withabone for the contributions)
+- Add: cap_drop and userns_mode fields to Service
+- Add: group_add to Service
+
 ## v0.6.1
 (Thanks to @cyqsimon for reporting the issue)
 - Resolve issue #31: Cannot mix long syntax and short syntax volume declaration
