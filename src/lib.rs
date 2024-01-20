@@ -163,6 +163,8 @@ pub struct Service {
     pub security_opt: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub secrets: Option<Secrets>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pull_policy: Option<PullPolicy>,
 }
 
 impl Service {
@@ -777,6 +779,16 @@ pub struct AdvancedSecrets {
     pub gid: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mode: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[serde(rename_all = "lowercase")]
+pub enum PullPolicy {
+    Always,
+    Never,
+    #[serde(alias = "if_not_present")]
+    Missing,
+    Build,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
