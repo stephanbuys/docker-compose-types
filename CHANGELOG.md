@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## v0.7.1
+(Thanks to @agavrilov)
+- Add pull_policy field (and relevant possible values) to Service
+- Also: Update dependencies
+
 ## v0.7.0
 (Thanks to @trijpstra-fourlights and @k9withabone for the contributions)
 - Add: cap_drop and userns_mode fields to Service
