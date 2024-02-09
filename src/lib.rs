@@ -216,7 +216,8 @@ pub struct DependsCondition {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct LoggingParameters {
-    pub driver: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub driver: Option<String>,
     #[cfg(feature = "indexmap")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub options: Option<IndexMap<String, SingleValue>>,
