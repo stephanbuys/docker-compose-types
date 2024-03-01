@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## v0.7.2
+(Thanks to @dustins)
+- Make `driver' optional for LoggingParameters
+
 ## v0.7.1
 (Thanks to @agavrilov)
 - Add pull_policy field (and relevant possible values) to Service

@@ -1,7 +1,7 @@
 [package]
 name = "docker-compose-types"
 description = "Deserialization and Serialization of docker-compose.yml files in a relatively strongly typed fashion."
-version = "0.7.1"
+version = "0.7.2"
 edition = "2021"
 repository = "https://github.com/stephanbuys/docker-compose-types"
 license = "MIT/Apache-2.0"
