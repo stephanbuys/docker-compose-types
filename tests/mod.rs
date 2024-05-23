@@ -1,3 +1,8 @@
+#[cfg(feature = "yaml")]
+use serde_yaml::from_str;
+#[cfg(feature = "yml")]
+use serde_yml::from_str;
+
 #[test]
 fn parse_compose() {
     use docker_compose_types::ComposeFile;
@@ -25,7 +30,7 @@ fn parse_compose() {
 
         let is_invalid = entry_path.contains("invalid.yml");
         let file_payload = std::fs::read_to_string(&entry).unwrap();
-        match serde_yaml::from_str::<ComposeFile>(&file_payload) {
+        match from_str::<ComposeFile>(&file_payload) {
             Ok(_) if is_invalid => {
                 // invalid compose file succeeded in being parsed
                 all_succeeded = false;
@@ -37,8 +42,7 @@ fn parse_compose() {
                 all_succeeded = false;
                 // The top-level enum for Compose V2 and Compose V3 tends to swallow meaningful errors
                 // so re-parse the file as Compose V3 and print the error
-                if let Err(e) = serde_yaml::from_str::<docker_compose_types::Compose>(&file_payload)
-                {
+                if let Err(e) = from_str::<docker_compose_types::Compose>(&file_payload) {
                     eprintln!("{entry_path} {e:?}");
                 }
             }
@@ -54,7 +58,7 @@ fn parse_compose_v3_full() {
 
     let file_payload =
         std::fs::read_to_string("tests/fixtures/v3-full/docker-compose.yml").unwrap();
-    match serde_yaml::from_str::<Compose>(&file_payload) {
+    match from_str::<Compose>(&file_payload) {
         Ok(_c) => {}
         Err(e) => eprintln!("{:?}", e),
     }
@@ -66,7 +70,7 @@ fn parse_extensions_v3_full() {
 
     let file_payload =
         std::fs::read_to_string("tests/fixtures/extensions/docker-compose.yml").unwrap();
-    match serde_yaml::from_str::<Compose>(&file_payload) {
+    match from_str::<Compose>(&file_payload) {
         Ok(_c) => {}
         Err(e) => eprintln!("{:?}", e),
     }
@@ -100,5 +104,5 @@ volumes:
     struct Container {
         volumes: Vec<Volumes>,
     }
-    let _parsed: Container = serde_yaml::from_str(v).unwrap();
+    let _parsed: Container = from_str(v).unwrap();
 }

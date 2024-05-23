@@ -2,12 +2,15 @@ use derive_builder::*;
 #[cfg(feature = "indexmap")]
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
-use serde_yaml::Value;
+#[cfg(feature = "yml")]
+use serde_yml as serde_yaml;
 #[cfg(not(feature = "indexmap"))]
 use std::collections::HashMap;
 use std::convert::TryFrom;
 use std::fmt;
 use std::str::FromStr;
+
+use serde_yaml::Value;
 
 #[allow(clippy::large_enum_variant)]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
