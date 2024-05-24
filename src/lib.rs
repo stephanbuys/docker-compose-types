@@ -168,6 +168,8 @@ pub struct Service {
     pub secrets: Option<Secrets>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pull_policy: Option<PullPolicy>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cgroup_parent: Option<String>,
 }
 
 impl Service {
