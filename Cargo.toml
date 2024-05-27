@@ -1,7 +1,7 @@
 [package]
 name = "docker-compose-types"
 description = "Deserialization and Serialization of docker-compose.yml files in a relatively strongly typed fashion."
-version = "0.8.1"
+version = "0.9.0"
 edition = "2021"
 repository = "https://github.com/stephanbuys/docker-compose-types"
 license = "MIT/Apache-2.0"
@@ -25,7 +25,7 @@ derive_builder = "0.20.0"
 indexmap = { version = "2.2", features = ["serde"], optional = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = { version = "=0.9.33", optional = true }
-serde_yml = { version = "0.0.7", optional = true }
+serde_yml = { version = "0.0.8", optional = true }
 
 [dev-dependencies]
 glob = "0.3"

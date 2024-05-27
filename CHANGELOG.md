@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## v0.9.0
+
+(Thanks to @pbrant)
+
+- Add `cgroup_parent` to `Service`
+
 ## v0.8.0
 
 - Bump `indexmap` to `2.2`
