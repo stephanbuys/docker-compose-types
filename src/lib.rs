@@ -1,7 +1,7 @@
 use derive_builder::*;
 #[cfg(feature = "indexmap")]
 use indexmap::IndexMap;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 #[cfg(feature = "yml")]
 use serde_yml as serde_yaml;
 #[cfg(not(feature = "indexmap"))]
@@ -133,10 +133,18 @@ pub struct Service {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub volumes_from: Vec<String>,
     #[cfg(feature = "indexmap")]
-    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    #[serde(
+        default,
+        deserialize_with = "de_extends_indexmap",
+        skip_serializing_if = "IndexMap::is_empty"
+    )]
     pub extends: IndexMap<String, String>,
     #[cfg(not(feature = "indexmap"))]
-    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
+    #[serde(
+        default,
+        deserialize_with = "de_extends_hashmap",
+        skip_serializing_if = "HashMap::is_empty"
+    )]
     pub extends: HashMap<String, String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub logging: Option<LoggingParameters>,
@@ -170,6 +178,74 @@ pub struct Service {
     pub pull_policy: Option<PullPolicy>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cgroup_parent: Option<String>,
+}
+
+#[cfg(feature = "indexmap")]
+fn de_extends_indexmap<'de, D>(deserializer: D) -> Result<IndexMap<String, String>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let value = Value::deserialize(deserializer)?;
+    if let Some(value_str) = value.as_str() {
+        let mut map = IndexMap::new();
+        map.insert("service".to_string(), value_str.to_string());
+        return Ok(map);
+    }
+
+    if let Some(value_map) = value.as_mapping() {
+        let mut map = IndexMap::new();
+        for (k, v) in value_map {
+            if !k.is_string() || !v.is_string() {
+                return Err(serde::de::Error::custom(
+                    "extends must must have string type for both Keys and Values".to_string(),
+                ));
+            }
+            //Should be safe due to previous check
+            map.insert(
+                k.as_str().unwrap().to_string(),
+                v.as_str().unwrap().to_string(),
+            );
+        }
+        return Ok(map);
+    }
+
+    Err(serde::de::Error::custom(
+        "extends must either be a map or a string".to_string(),
+    ))
+}
+
+#[cfg(not(feature = "indexmap"))]
+fn de_extends_hashmap<'de, D>(deserializer: D) -> Result<HashMap<String, String>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let value = Value::deserialize(deserializer)?;
+    if let Some(value_str) = value.as_str() {
+        let mut map = HashMap::new();
+        map.insert("service".to_string(), value_str.to_string());
+        return Ok(map);
+    }
+
+    if let Some(value_map) = value.as_mapping() {
+        let mut map = HashMap::new();
+        for (k, v) in value_map {
+            if !k.is_string() || !v.is_string() {
+                return Err(serde::de::Error::custom(
+                    "extends must must have string type for both Keys and Values".to_string(),
+                ));
+            }
+            //Should be safe due to previous check
+            map.insert(
+                k.as_str().unwrap().to_string(),
+                v.as_str().unwrap().to_string(),
+            );
+        }
+        return Ok(map);
+    }
+
+    Err(serde::de::Error::custom(
+        "extends must either be a map or a string".to_string(),
+    ))
 }
 
 impl Service {
