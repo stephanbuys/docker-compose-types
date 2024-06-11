@@ -1,7 +1,14 @@
 Changelog
 =========
 
+## v0.10.0
+
+(Thanks to @snaggen)
+
 ## v0.9.0
+
+- Support the alternative notation for `extends` in services. As
+  per https://docs.docker.com/compose/multiple-compose-files/extends/#extending-services-within-the-same-file
 
 (Thanks to @pbrant)
 
