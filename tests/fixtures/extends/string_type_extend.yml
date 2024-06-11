@@ -1,0 +1,9 @@
+version: '2'
+services:
+  myweb:
+    extends: base
+    command: btm
+
+  base:
+    image: busybox
+    command: top
