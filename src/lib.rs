@@ -165,7 +165,7 @@ pub struct Service {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub extra_hosts: Vec<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub group_add: Vec<String>,
+    pub group_add: Vec<Group>,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub tty: bool,
     #[serde(default, skip_serializing_if = "SysCtls::is_empty")]
@@ -950,6 +950,13 @@ impl fmt::Display for SingleValue {
             Self::Float(fl) => write!(f, "{fl}"),
         }
     }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[serde(untagged)]
+pub enum Group {
+    Named(String),
+    Gid(u32),
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Hash)]
