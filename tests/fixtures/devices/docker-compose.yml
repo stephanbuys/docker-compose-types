@@ -1,0 +1,17 @@
+version: "2"
+services:
+  simple:
+    image: busybox:1.27.2
+    command: top
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+              #device_ids and count is really mutually exclusive
+              #but not in our implementation, that logic must be 
+              #handled on a higher level
+              count: 0 
+              device_ids: ["0"]
+

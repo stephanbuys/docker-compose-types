@@ -744,13 +744,30 @@ pub enum HealthcheckTest {
     Multiple(Vec<String>),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Default)]
 #[serde(deny_unknown_fields)]
 pub struct Limits {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cpus: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub memory: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub devices: Option<Vec<Device>>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Default)]
+#[serde(deny_unknown_fields)]
+pub struct Device {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub driver: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub count: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub device_ids: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub capabilities: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub options: Option<IndexMap<String, Value>>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
@@ -768,7 +785,7 @@ pub struct Preferences {
     pub spread: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Default)]
 #[serde(deny_unknown_fields)]
 pub struct Resources {
     pub limits: Option<Limits>,
