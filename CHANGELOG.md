@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## v0.12.0
+
+(Thanks to @snaggen)
+
+- Support for read_only images https://docs.docker.com/compose/compose-file/05-services/
+
 ## v0.11.0
 
 (Thanks to @snaggen)
