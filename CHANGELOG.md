@@ -1,6 +1,16 @@
 Changelog
 =========
 
+## v0.13.0
+
+(Thanks to @snaggen)
+
+- Support for devices in reservations https://docs.docker.com/compose/compose-file/deploy/#devices
+
+(Thanks to @pbrant)
+
+- Support for domainname in Service https://docs.docker.com/compose/compose-file/05-services/#domainname
+
 ## v0.12.0
 
 (Thanks to @snaggen)
