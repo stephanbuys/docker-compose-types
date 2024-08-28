@@ -1,6 +1,17 @@
 Changelog
 =========
 
+## v0.14.0
+
+(Thanks to @Ptrskay3)
+
+- Add mem_limit, mem_reservation and mem_swappiness based
+  on https://docs.docker.com/reference/compose-file/services/#mem_limit
+
+(Other)
+
+- Fix `indexmap` feature issue when not using default features of the crate.
+
 ## v0.13.0
 
 (Thanks to @snaggen)

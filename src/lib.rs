@@ -775,7 +775,10 @@ pub struct Device {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub capabilities: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[cfg(feature = "indexmap")]
     pub options: Option<IndexMap<String, Value>>,
+    #[cfg(not(feature = "indexmap"))]
+    pub options: Option<HashMap<String, Value>>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
@@ -832,14 +835,14 @@ pub struct UpdateConfig {
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ComposeSecrets(
     #[serde(with = "serde_yaml::with::singleton_map_recursive")]
-    pub  IndexMap<String, Option<ComposeSecret>>,
+    pub IndexMap<String, Option<ComposeSecret>>,
 );
 
 #[cfg(not(feature = "indexmap"))]
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ComposeSecrets(
     #[serde(with = "serde_yaml::with::singleton_map_recursive")]
-    pub  HashMap<String, Option<ComposeSecret>>,
+    pub HashMap<String, Option<ComposeSecret>>,
 );
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
