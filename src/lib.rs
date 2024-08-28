@@ -835,14 +835,14 @@ pub struct UpdateConfig {
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ComposeSecrets(
     #[serde(with = "serde_yaml::with::singleton_map_recursive")]
-    pub IndexMap<String, Option<ComposeSecret>>,
+    pub  IndexMap<String, Option<ComposeSecret>>,
 );
 
 #[cfg(not(feature = "indexmap"))]
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ComposeSecrets(
     #[serde(with = "serde_yaml::with::singleton_map_recursive")]
-    pub HashMap<String, Option<ComposeSecret>>,
+    pub  HashMap<String, Option<ComposeSecret>>,
 );
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
