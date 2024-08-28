@@ -182,6 +182,12 @@ pub struct Service {
     pub pull_policy: Option<PullPolicy>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cgroup_parent: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mem_limit: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mem_reservation: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mem_swappiness: Option<u16>,
 }
 
 #[cfg(feature = "indexmap")]

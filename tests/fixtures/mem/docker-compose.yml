@@ -1,0 +1,8 @@
+version: "3"
+services:
+  passes:
+    image: busybox
+    command: top
+    mem_limit: 0.5G
+    mem_reservation: 1G
+    mem_swappiness: 60
