@@ -741,6 +741,8 @@ pub struct Healthcheck {
     pub retries: i64,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub start_period: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub start_interval: Option<String>,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub disable: bool,
 }
