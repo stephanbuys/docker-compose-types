@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## v0.15.0
+
+(Thanks to @snaggen)
+
+- Add the `start_interval` field to `Healthcheck` as
+  per https://docs.docker.com/reference/compose-file/services/#healthcheck
+
 ## v0.14.0
 
 (Thanks to @Ptrskay3)
