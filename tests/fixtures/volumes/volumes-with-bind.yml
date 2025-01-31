@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  frigate:
+    image: ghcr.io/blakeblackshear/frigate:stable
+    volumes:
+      - type: bind
+        source: /etc/frigate/config.yml
+        target: /config/config.yml
+        bind: 
+          create_host_path: true
+          propagation: shared
+          selinux: z

@@ -33,6 +33,8 @@ pub struct SingleService {
 pub struct Compose {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
     #[serde(default, skip_serializing_if = "Services::is_empty")]
     pub services: Services,
     #[serde(default, skip_serializing_if = "TopLevelVolumes::is_empty")]
@@ -933,13 +935,15 @@ pub struct AdvancedVolumes {
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
 #[serde(deny_unknown_fields)]
 pub struct Bind {
-    pub propagation: String,
+    pub propagation: Option<String>,
+    pub create_host_path: Option<bool>,
+    pub selinux: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
 #[serde(deny_unknown_fields)]
 pub struct Volume {
-    pub nocopy: bool,
+    pub nocopy: Option<bool>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
