@@ -1,6 +1,20 @@
 Changelog
 =========
 
+## v0.16.0
+
+(Thanks to @snaggen)
+
+Make Compose compatible with output from "docker compose config"
+
+- Updated Volume bind filed
+    - Made propagation optional, and added additional fields to comply
+      with https://docs.docker.com/reference/compose-file/services/#volumes
+- Allow toplevel field 'name'
+    - ref. https://docs.docker.com/reference/compose-file/version-and-name/
+- Handle empty volume fields
+    - Make Volume nocopy optional
+
 ## v0.15.0
 
 (Thanks to @snaggen)
