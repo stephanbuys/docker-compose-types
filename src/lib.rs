@@ -943,7 +943,10 @@ pub struct Bind {
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
 #[serde(deny_unknown_fields)]
 pub struct Volume {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub nocopy: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub subpath: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
