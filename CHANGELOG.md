@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## v0.17.0
+
+(Thanks to @lambdaclass)
+
+- Add subpath option for advanced volumes
+
 ## v0.16.0
 
 (Thanks to @snaggen)
