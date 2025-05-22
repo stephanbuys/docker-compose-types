@@ -1,6 +1,6 @@
 #[cfg(feature = "yaml")]
 use serde_yaml::from_str;
-#[cfg(feature = "yml")]
+#[cfg(all(feature = "yml", not(feature = "yaml")))]
 use serde_yml::from_str;
 
 #[test]
