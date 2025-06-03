@@ -190,6 +190,8 @@ pub struct Service {
     pub mem_reservation: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mem_swappiness: Option<u16>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub runtime: Option<String>,
 }
 
 #[cfg(feature = "indexmap")]

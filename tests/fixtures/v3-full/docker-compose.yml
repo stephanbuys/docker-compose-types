@@ -1,6 +1,7 @@
 version: "3.5"
 services:
   web:
+    runtime: runc
     healthcheck:
       test: cat /etc/passwd
       interval: 10s
