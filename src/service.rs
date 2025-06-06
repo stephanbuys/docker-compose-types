@@ -6,13 +6,10 @@ use indexmap::IndexMap;
 use serde::{Deserialize, Deserializer, Serialize};
 #[cfg(not(feature = "indexmap"))]
 use std::collections::HashMap;
-use std::convert::TryFrom;
-use std::fmt;
-use std::str::FromStr;
 
 use serde_yaml::Value;
 
-use crate::{Labels, SingleValue, Volumes, MapOrEmpty, Secrets};
+use crate::{SingleValue, Volumes, MapOrEmpty, Secrets};
 
 #[derive(Builder, Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 #[builder(setter(into), default)]
@@ -663,8 +660,8 @@ pub enum Entrypoint {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[serde(untagged)]
 pub enum Group {
     Named(String),
     Gid(u32),
 }
-
