@@ -1,5 +1,6 @@
 // Network related structures extracted from lib.rs
 
+use derive_builder::*;
 #[cfg(feature = "indexmap")]
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
@@ -51,7 +52,8 @@ pub struct ComposeNetworkSettingDetails {
 pub struct ExternalNetworkSettingBool(bool);
 
 /// Configuration settings for a network in a Compose file.
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
+#[derive(Builder, Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
+#[builder(setter(into), default)]
 #[serde(deny_unknown_fields)]
 pub struct NetworkSettings {
     /// Whether the network can be attached to by external containers.
@@ -89,7 +91,8 @@ pub struct NetworkSettings {
 }
 
 /// IP Address Management configuration for a network.
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[derive(Builder, Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
+#[builder(setter(into), default)]
 #[serde(deny_unknown_fields)]
 pub struct Ipam {
     /// IPAM driver to use.
@@ -101,7 +104,8 @@ pub struct Ipam {
 }
 
 /// Configuration block for IPAM settings.
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[derive(Builder, Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[builder(setter(into))]
 #[serde(deny_unknown_fields)]
 pub struct IpamConfig {
     /// Subnet in CIDR format.

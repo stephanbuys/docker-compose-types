@@ -1,5 +1,6 @@
 // Volume related structures extracted from lib.rs
 
+use derive_builder::*;
 #[cfg(feature = "indexmap")]
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
@@ -26,7 +27,8 @@ impl TopLevelVolumes {
 }
 
 /// Configuration for a volume in a Compose file.
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Builder, Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
+#[builder(setter(into), default)]
 pub struct ComposeVolume {
     /// Volume driver to use for this volume.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -71,7 +73,8 @@ pub enum Volumes {
 }
 
 /// Advanced volume configuration with detailed settings.
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[derive(Builder, Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[builder(setter(into))]
 #[serde(deny_unknown_fields)]
 pub struct AdvancedVolumes {
     /// Source path or volume name.
@@ -97,7 +100,8 @@ pub struct AdvancedVolumes {
 }
 
 /// Configuration options for bind mounts.
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
+#[derive(Builder, Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
+#[builder(setter(into), default)]
 #[serde(deny_unknown_fields)]
 pub struct Bind {
     /// Propagation mode for the bind mount.
@@ -109,7 +113,8 @@ pub struct Bind {
 }
 
 /// Configuration options for named volumes.
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
+#[derive(Builder, Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
+#[builder(setter(into), default)]
 #[serde(deny_unknown_fields)]
 pub struct Volume {
     /// Disable copying data from the container when a volume is created.
@@ -121,7 +126,8 @@ pub struct Volume {
 }
 
 /// Configuration options for tmpfs mounts.
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
+#[derive(Builder, Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
+#[builder(setter(into), default)]
 #[serde(deny_unknown_fields)]
 pub struct TmpfsSettings {
     /// Size of the tmpfs mount in bytes.

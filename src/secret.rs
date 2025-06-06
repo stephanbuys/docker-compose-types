@@ -1,5 +1,6 @@
 // Secret related structures extracted from lib.rs
 
+use derive_builder::*;
 #[cfg(feature = "indexmap")]
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
@@ -68,7 +69,8 @@ impl Secrets {
 }
 
 /// Advanced secret configuration with detailed settings.
-#[derive(Clone, Default, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[derive(Builder, Clone, Default, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[builder(setter(into), default)]
 #[serde(deny_unknown_fields)]
 pub struct AdvancedSecrets {
     /// Name of the secret in the Compose file.
