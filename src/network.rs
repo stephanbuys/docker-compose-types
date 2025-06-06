@@ -1,12 +1,12 @@
 // Network related structures extracted from lib.rs
 
-use serde::{Deserialize, Serialize};
 #[cfg(feature = "indexmap")]
 use indexmap::IndexMap;
+use serde::{Deserialize, Serialize};
 #[cfg(not(feature = "indexmap"))]
 use std::collections::HashMap;
 
-use crate::{Labels, SingleValue, MapOrEmpty};
+use crate::{Labels, MapOrEmpty, SingleValue};
 
 #[cfg(feature = "indexmap")]
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
@@ -82,4 +82,3 @@ pub struct IpamConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gateway: Option<String>,
 }
-

@@ -11,15 +11,15 @@ use std::str::FromStr;
 
 use serde_yaml::Value;
 
-mod service;
 mod network;
-mod volume;
 mod secret;
+mod service;
+mod volume;
 
-pub use service::*;
 pub use network::*;
-pub use volume::*;
 pub use secret::*;
+pub use service::*;
+pub use volume::*;
 
 #[allow(clippy::large_enum_variant)]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]

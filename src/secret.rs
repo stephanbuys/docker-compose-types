@@ -1,8 +1,8 @@
 // Secret related structures extracted from lib.rs
 
-use serde::{Deserialize, Serialize};
 #[cfg(feature = "indexmap")]
 use indexmap::IndexMap;
+use serde::{Deserialize, Serialize};
 #[cfg(not(feature = "indexmap"))]
 use std::collections::HashMap;
 
@@ -67,4 +67,3 @@ pub struct AdvancedSecrets {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mode: Option<String>,
 }
-

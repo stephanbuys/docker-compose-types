@@ -9,7 +9,7 @@ use std::collections::HashMap;
 
 use serde_yaml::Value;
 
-use crate::{SingleValue, Volumes, MapOrEmpty, Secrets};
+use crate::{MapOrEmpty, Secrets, SingleValue, Volumes};
 
 #[derive(Builder, Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 #[builder(setter(into), default)]
@@ -429,7 +429,7 @@ impl Networks {
 #[serde(untagged)]
 pub enum BuildStep {
     Simple(String),
-    Advanced(AdvancedBuildStep),
+    Advanced(Box<AdvancedBuildStep>),
 }
 
 #[derive(Builder, Clone, Debug, Deserialize, Serialize, Eq, PartialEq, Default)]
