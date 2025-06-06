@@ -21,39 +21,54 @@ pub use secret::*;
 pub use service::*;
 pub use volume::*;
 
+/// Represents a Docker Compose document, supporting different formats and versions.
 #[allow(clippy::large_enum_variant)]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(untagged)]
 pub enum ComposeFile {
+    /// Version 2 and above compose file structure.
     V2Plus(Compose),
     #[cfg(feature = "indexmap")]
+    /// Legacy v1 service definitions as a map of service names to `Service`.
     V1(IndexMap<String, Service>),
     #[cfg(not(feature = "indexmap"))]
+    /// Legacy v1 service definitions as a standard `HashMap`.
     V1(HashMap<String, Service>),
+    /// Single service definition format, wrapping one `Service` instance.
     Single(SingleService),
 }
 
+/// Wrapper for a single `Service` when using the single service format.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
 pub struct SingleService {
+    /// The single service defined in the document ('service').
     pub service: Service,
 }
 
+/// Core Compose model containing version, services, volumes, networks, and extensions.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
 pub struct Compose {
+    /// Compose specification version string (e.g., '"3.8"').
     #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    /// Optional project name override ('name').
     pub name: Option<String>,
+    /// Service definitions map ('services').
     #[serde(default, skip_serializing_if = "Services::is_empty")]
     pub services: Services,
+    /// Top-level volume definitions ('volumes').
     #[serde(default, skip_serializing_if = "TopLevelVolumes::is_empty")]
     pub volumes: TopLevelVolumes,
+    /// Network definitions ('networks').
     #[serde(default, skip_serializing_if = "ComposeNetworks::is_empty")]
     pub networks: ComposeNetworks,
+    /// Optional single service inline support ('service').
     #[serde(skip_serializing_if = "Option::is_none")]
     pub service: Option<Service>,
+    /// Top-level secret definitions ('secrets').
     #[serde(skip_serializing_if = "Option::is_none")]
     pub secrets: Option<ComposeSecrets>,
+    /// Extension fields (keys starting with 'x-') flattened into a map.
     #[cfg(feature = "indexmap")]
     #[serde(flatten, skip_serializing_if = "IndexMap::is_empty")]
     pub extensions: IndexMap<Extension, Value>,
