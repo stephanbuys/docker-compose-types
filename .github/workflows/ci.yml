@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust:
+          - stable
+          - beta
+          - nightly
+        features:
+          - ""  # default features
+          - "--no-default-features --features indexmap,yaml"
+          - "--no-default-features --features indexmap,yml"
+          - "--no-default-features --features yaml"
+          - "--no-default-features --features yml"
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust ${{ matrix.rust }}
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.rust }}
+          override: true
+      
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: ${{ matrix.features }}
+      
+      - name: Run tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: ${{ matrix.features }}
+
+  # Test on Windows and macOS with stable Rust only
+  test-platforms:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust stable
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+      
+      - name: Run tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
