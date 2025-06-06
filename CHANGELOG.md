@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## v0.18.0
+
+(Thanks to @John-Vash)
+
+- Add `runtime` field to `Service` as per https://docs.docker.com/compose/compose-file/compose-file-v3/#runtime
+
 ## v0.17.0
 
 (Thanks to @lambdaclass)
