@@ -2,6 +2,8 @@ Docker Compose Types
 ===========
 
 [![crates.io](https://img.shields.io/crates/v/docker-compose-types.svg)](https://crates.io/crates/docker-compose-types)
+[![CI](https://github.com/stephanbuys/docker-compose-types/actions/workflows/ci.yml/badge.svg)](https://github.com/stephanbuys/docker-compose-types/actions/workflows/ci.yml)
+[![Code Quality](https://github.com/stephanbuys/docker-compose-types/actions/workflows/code-quality.yml/badge.svg)](https://github.com/stephanbuys/docker-compose-types/actions/workflows/code-quality.yml)
 
 Contributions are very welcome, the idea behind this crate is to allow for safe serialization of docker-compose files with as little room for error as possible.
 
