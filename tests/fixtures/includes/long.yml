@@ -1,0 +1,11 @@
+includes:
+  - path: common.yml
+    project_directory: "."
+    env_file: "test.env"
+  - path: common2.yml
+    env_file:
+      - "test.env"
+      - "test2.env"
+services:
+  foo:
+    image: busybox

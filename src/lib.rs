@@ -35,6 +35,8 @@ pub struct Compose {
     pub version: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub includes: Option<Includes>,
     #[serde(default, skip_serializing_if = "Services::is_empty")]
     pub services: Services,
     #[serde(default, skip_serializing_if = "TopLevelVolumes::is_empty")]
@@ -56,6 +58,33 @@ pub struct Compose {
 impl Compose {
     pub fn new() -> Self {
         Default::default()
+    }
+}
+
+#[derive(Builder, Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
+#[builder(setter(into), default)]
+pub struct Include {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub project_directory: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub path: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub env_file: Option<EnvFile>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(untagged)]
+pub enum Includes {
+    Short(Vec<String>),
+    Long(Vec<Include>),
+}
+
+impl Includes {
+    pub fn is_empty(&self) -> bool {
+        match self {
+            Includes::Short(xs) => xs.is_empty(),
+            Includes::Long(xs) => xs.is_empty(),
+        }
     }
 }
 

@@ -1,0 +1,5 @@
+includes:
+  - common.yml
+services:
+  foo:
+    image: busybox
