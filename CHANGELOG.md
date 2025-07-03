@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## v0.19.0
+
+(Thanks to @hamnnis)
+
+- Add includes to compose file
+
 ## v0.18.0
 
 (Thanks to @John-Vash)
