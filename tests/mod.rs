@@ -106,3 +106,28 @@ volumes:
     }
     let _parsed: Container = from_str(v).unwrap();
 }
+
+#[test]
+fn parse_dockerfile_inline() {
+    use docker_compose_types::BuildStep;
+    use docker_compose_types::Compose;
+
+    let file_payload =
+        std::fs::read_to_string("tests/fixtures/dockerfile-inline/docker-compose.yml").unwrap();
+
+    let mut actual_parsed: Compose = from_str(&file_payload).unwrap();
+
+    let dockerfile_inline = actual_parsed
+        .services
+        .0
+        .swap_remove("busybox")
+        .flatten()
+        .and_then(|service| service.build_)
+        .map(|build_| match build_ {
+            BuildStep::Advanced(adv) => adv,
+            BuildStep::Simple(_) => panic!("Not advanced BuildStep"),
+        })
+        .and_then(|adv| adv.dockerfile_inline)
+        .expect("No dockerfile_inline");
+    assert!(dockerfile_inline.contains("FROM busybox"));
+}

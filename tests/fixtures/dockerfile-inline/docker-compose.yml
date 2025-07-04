@@ -1,0 +1,7 @@
+services:
+  busybox:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM busybox
+        RUN ls /
