@@ -332,10 +332,47 @@ impl DependsOnOptions {
         }
     }
 }
-
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+/// https://docs.docker.com/reference/compose-file/services/#depends_on
+#[derive(Default, Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 pub struct DependsCondition {
     pub condition: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub restart: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub required: Option<bool>,
+}
+
+impl DependsCondition {
+    pub fn new(condition: impl Into<String>) -> Self {
+        Self {
+            condition: condition.into(),
+            ..Default::default()
+        }
+    }
+    pub fn service_started() -> Self {
+        Self::new("service_started")
+    }
+
+    pub fn service_healthy() -> Self {
+        Self::new("service_healthy")
+    }
+
+    pub fn service_completed_successfully() -> Self {
+        Self::new("service_completed_successfully")
+    }
+
+    pub fn with_restart(self, flag: bool) -> Self {
+        Self {
+            restart: Some(flag),
+            ..self
+        }
+    }
+    pub fn with_required(self, flag: bool) -> Self {
+        Self {
+            required: Some(flag),
+            ..self
+        }
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
