@@ -61,13 +61,20 @@ impl Compose {
     }
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[serde(untagged)]
+pub enum StringOrList {
+    Simple(String),
+    List(Vec<String>),
+}
+
 #[derive(Builder, Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 #[builder(setter(into), default)]
 pub struct Include {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub project_directory: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub path: Option<String>,
+    pub path: Option<StringOrList>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub env_file: Option<EnvFile>,
 }
@@ -301,12 +308,7 @@ impl Service {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
-#[serde(untagged)]
-pub enum EnvFile {
-    Simple(String),
-    List(Vec<String>),
-}
+type EnvFile = StringOrList;
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(untagged)]
