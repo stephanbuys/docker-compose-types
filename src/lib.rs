@@ -558,6 +558,8 @@ pub struct AdvancedBuildStep {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dockerfile: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dockerfile_inline: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub args: Option<BuildArgs>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shm_size: Option<u64>,
