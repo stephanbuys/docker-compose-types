@@ -2,8 +2,11 @@ use derive_builder::*;
 #[cfg(feature = "indexmap")]
 use indexmap::IndexMap;
 use serde::{Deserialize, Deserializer, Serialize};
+#[cfg(feature = "norway")]
+use serde_norway as serde_yaml;
 #[cfg(feature = "yml")]
 use serde_yml as serde_yaml;
+
 #[cfg(not(feature = "indexmap"))]
 use std::collections::HashMap;
 use std::convert::TryFrom;
