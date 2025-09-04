@@ -834,7 +834,9 @@ pub struct Preferences {
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Default)]
 #[serde(deny_unknown_fields)]
 pub struct Resources {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub limits: Option<Limits>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub reservations: Option<Limits>,
 }
 
