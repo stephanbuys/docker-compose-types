@@ -35,8 +35,8 @@ pub struct Compose {
     pub version: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub includes: Option<Includes>,
+    #[serde(default, skip_serializing_if = "Includes::is_empty")]
+    pub include: Includes,
     #[serde(default, skip_serializing_if = "Services::is_empty")]
     pub services: Services,
     #[serde(default, skip_serializing_if = "TopLevelVolumes::is_empty")]
@@ -61,13 +61,20 @@ impl Compose {
     }
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[serde(untagged)]
+pub enum StringOrList {
+    Simple(String),
+    List(Vec<String>),
+}
+
 #[derive(Builder, Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 #[builder(setter(into), default)]
 pub struct Include {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub project_directory: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub path: Option<String>,
+    pub path: Option<StringOrList>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub env_file: Option<EnvFile>,
 }
@@ -85,6 +92,12 @@ impl Includes {
             Includes::Short(xs) => xs.is_empty(),
             Includes::Long(xs) => xs.is_empty(),
         }
+    }
+}
+
+impl Default for Includes {
+    fn default() -> Self {
+        Self::Short(vec![])
     }
 }
 
@@ -301,12 +314,7 @@ impl Service {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
-#[serde(untagged)]
-pub enum EnvFile {
-    Simple(String),
-    List(Vec<String>),
-}
+type EnvFile = StringOrList;
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(untagged)]
