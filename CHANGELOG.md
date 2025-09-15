@@ -1,14 +1,12 @@
 Changelog
 =========
 
-## Unreleased
+## v0.20.0
 
 (Thanks to @hamnnis)
 
 - Add restart and required to DependsCondition (#55)
 - Allow Include.path to be a string or a list (#56)
-(Thanks to @hamnnis)
-
 - Add serde_norway as an alternative YAML backend (#58)
 
 (Thanks to @glueball)
