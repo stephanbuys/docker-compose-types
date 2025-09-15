@@ -811,7 +811,7 @@ fn is_zero(val: &i64) -> bool {
     *val == 0
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
 #[serde(deny_unknown_fields)]
 pub struct Healthcheck {
     #[serde(skip_serializing_if = "Option::is_none")]
