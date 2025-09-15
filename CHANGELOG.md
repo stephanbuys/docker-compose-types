@@ -15,6 +15,10 @@ Changelog
 
 - Add support for dockerfile_inline in Advanced build step (#57)
 
+(Thanks to @ava57r)
+
+- Add skip_serializing_if for Resources (#59)
+
 ## v0.19.0
 
 (Thanks to @hamnnis)
