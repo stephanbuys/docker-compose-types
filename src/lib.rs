@@ -35,8 +35,8 @@ pub struct Compose {
     pub version: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
-    #[serde(default, skip_serializing_if = "Includes::is_empty")]
-    pub include: Includes,
+    #[serde(default, rename = "includes", alias = "include", skip_serializing_if = "Option::is_none")]
+    pub includes: Option<Includes>,
     #[serde(default, skip_serializing_if = "Services::is_empty")]
     pub services: Services,
     #[serde(default, skip_serializing_if = "TopLevelVolumes::is_empty")]

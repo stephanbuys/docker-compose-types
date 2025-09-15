@@ -6,6 +6,7 @@ Changelog
 (Thanks to @hamnnis)
 
 - Add restart and required to DependsCondition (#55)
+- Allow Include.path to be a string or a list (#56)
 
 ## v0.19.0
 
