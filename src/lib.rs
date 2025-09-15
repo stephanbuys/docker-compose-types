@@ -167,6 +167,8 @@ pub struct Service {
     pub links: Vec<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub dns: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub dns_opt: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ipc: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
