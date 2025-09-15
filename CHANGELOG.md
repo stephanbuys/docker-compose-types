@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## Unreleased
+
+(Thanks to @hamnnis)
+
+- Add restart and required to DependsCondition (#55)
+
 ## v0.19.0
 
 (Thanks to @hamnnis)
