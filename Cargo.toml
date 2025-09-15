@@ -18,6 +18,7 @@ default = ["indexmap", "yaml"]
 indexmap = ["dep:indexmap"]
 yml = ["dep:serde_yml"]
 yaml = ["dep:serde_yaml"]
+norway = ["dep:serde_norway"]
 
 
 [dependencies]
@@ -26,6 +27,7 @@ indexmap = { version = "2.2", features = ["serde"], optional = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = { version = "=0.9.33", optional = true }
 serde_yml = { version = "0.0.12", optional = true }
+serde_norway = { version = "0.9.42", optional = true }
 
 [dev-dependencies]
 glob = "0.3"
