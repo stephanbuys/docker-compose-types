@@ -8,6 +8,10 @@ Changelog
 - Add restart and required to DependsCondition (#55)
 - Allow Include.path to be a string or a list (#56)
 
+(Thanks to @glueball)
+
+- Add support for dockerfile_inline in Advanced build step (#57)
+
 ## v0.19.0
 
 (Thanks to @hamnnis)
