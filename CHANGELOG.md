@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## Unreleased
+
+(Thanks to @hamnis)
+
+- Derive Default for Healthcheck (#60)
+
 ## v0.20.0
 
 (Thanks to @hamnnis)
