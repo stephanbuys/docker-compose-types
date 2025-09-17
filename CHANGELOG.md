@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## v0.22.0
+
+- Restore support for Compose files that use the canonical `includes` key by
+  keeping the field optional and accepting both spellings
+- Add regression test coverage for include entries that provide a list of paths
+
 ## v0.21.0
 
 (Thanks to @hamnis)

@@ -1,0 +1,27 @@
+name: myapp
+includes:
+  - path:
+      - ./compose-apps/app1/local/compose.yml
+      - ./overrides/app1-override.compose.yml
+  - path:
+      - ./compose-apps/app2/local/compose.yml
+      - ./overrides/app2-override.compose.yml
+services:
+  docker-host:
+    image: foo/bar
+    restart: on-failure
+    networks:
+      - default
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    pull_policy: missing
+    mem_limit: 8M
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.69.0.0/24
+          gateway: 172.69.0.1

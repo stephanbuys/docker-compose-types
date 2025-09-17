@@ -133,3 +133,52 @@ fn parse_dockerfile_inline() {
         .expect("No dockerfile_inline");
     assert!(dockerfile_inline.contains("FROM busybox"));
 }
+
+#[test]
+fn include_path_supports_multiple_entries() {
+    use docker_compose_types::{Compose, Includes, StringOrList};
+
+    let file_payload =
+        std::fs::read_to_string("tests/fixtures/includes/testcase-includes-compose.yml").unwrap();
+    let compose: Compose = from_str(&file_payload).unwrap();
+
+    assert_eq!(compose.name.as_deref(), Some("myapp"));
+
+    let includes = compose
+        .includes
+        .expect("expected includes to be preserved in the parsed compose file");
+
+    let entries = match includes {
+        Includes::Long(entries) => entries,
+        other => panic!("expected long include entries, got {other:?}"),
+    };
+
+    assert_eq!(entries.len(), 2);
+
+    let mut paths_iter = entries.iter().map(|entry| {
+        match entry
+            .path
+            .as_ref()
+            .expect("include entry is missing a path")
+        {
+            StringOrList::List(values) => values.clone(),
+            other => panic!("expected include path list, got {other:?}"),
+        }
+    });
+
+    assert_eq!(
+        paths_iter.next().expect("missing first include entry"),
+        vec![
+            "./compose-apps/app1/local/compose.yml".to_owned(),
+            "./overrides/app1-override.compose.yml".to_owned()
+        ]
+    );
+
+    assert_eq!(
+        paths_iter.next().expect("missing second include entry"),
+        vec![
+            "./compose-apps/app2/local/compose.yml".to_owned(),
+            "./overrides/app2-override.compose.yml".to_owned()
+        ]
+    );
+}
