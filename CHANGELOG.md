@@ -6,6 +6,7 @@ Changelog
 (Thanks to @hamnis)
 
 - Derive Default for Healthcheck (#60)
+- Add dns_opt to Service (#61)
 
 ## v0.20.0
 
