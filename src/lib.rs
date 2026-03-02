@@ -76,6 +76,22 @@ pub enum StringOrList {
     List(Vec<String>),
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[serde(untagged)]
+pub enum StringOrUnsigned {
+    String(String),
+    Unsigned(i64),
+}
+
+impl fmt::Display for StringOrUnsigned {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::String(s) => f.write_str(s),
+            Self::Unsigned(u) => write!(f, "{u}"),
+        }
+    }
+}
+
 #[derive(Builder, Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 #[builder(setter(into), default)]
 pub struct Include {
@@ -572,8 +588,11 @@ impl Ulimits {
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(untagged)]
 pub enum Ulimit {
-    Single(i64),
-    SoftHard { soft: i64, hard: i64 },
+    Single(StringOrUnsigned),
+    SoftHard {
+        soft: StringOrUnsigned,
+        hard: StringOrUnsigned,
+    },
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq)]
