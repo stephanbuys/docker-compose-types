@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## v0.22.1
+
+(Thanks to @bcmyers)
+
+- Stop pinning `serde_yaml` to an exact version (#64)
+
 ## v0.22.0
 
 - Restore support for Compose files that use the canonical `includes` key by
