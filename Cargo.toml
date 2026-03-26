@@ -25,7 +25,7 @@ norway = ["dep:serde_norway"]
 derive_builder = "0.20.0"
 indexmap = { version = "2.2", features = ["serde"], optional = true }
 serde = { version = "1.0", features = ["derive"] }
-serde_yaml = { version = "=0.9.33", optional = true }
+serde_yaml = { version = "0.9.33", optional = true }
 serde_yml = { version = "0.0.12", optional = true }
 serde_norway = { version = "0.9.42", optional = true }
 
