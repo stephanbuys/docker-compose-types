@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## v0.23.0
+
+(Thanks to @8BitMate)
+
+- Allow `ulimits` values to be strings in addition to integers (#65)
+
 ## v0.22.1
 
 (Thanks to @bcmyers)
