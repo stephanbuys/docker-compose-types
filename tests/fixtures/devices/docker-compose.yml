@@ -10,8 +10,15 @@ services:
             - driver: nvidia
               capabilities: [gpu]
               #device_ids and count is really mutually exclusive
-              #but not in our implementation, that logic must be 
+              #but not in our implementation, that logic must be
               #handled on a higher level
-              count: 0 
+              count: 0
               device_ids: ["0"]
-
+        limits:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+              count: all
+            - driver: nvidia
+              capabilities: [gpu]
+              count: 2

@@ -92,6 +92,47 @@ impl fmt::Display for StringOrUnsigned {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+pub enum DeviceCount {
+    All,
+    Count(u64),
+}
+
+impl Serialize for DeviceCount {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        match self {
+            Self::All => serializer.serialize_str("all"),
+            Self::Count(n) => serializer.serialize_u64(*n),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for DeviceCount {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value = Value::deserialize(deserializer)?;
+        if let Some(s) = value.as_str() {
+            if s == "all" {
+                return Ok(Self::All);
+            }
+            return Err(serde::de::Error::custom(
+                format!("invalid device count: {s:?}, expected \"all\" or an integer"),
+            ));
+        }
+        if let Some(n) = value.as_u64() {
+            return Ok(Self::Count(n));
+        }
+        Err(serde::de::Error::custom(
+            "device count must be \"all\" or an integer",
+        ))
+    }
+}
+
 #[derive(Builder, Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 #[builder(setter(into), default)]
 pub struct Include {
@@ -880,7 +921,7 @@ pub struct Device {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub driver: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub count: Option<u32>,
+    pub count: Option<DeviceCount>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub device_ids: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
