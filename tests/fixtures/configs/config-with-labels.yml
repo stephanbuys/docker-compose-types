@@ -1,0 +1,32 @@
+services:
+  foo:
+    configs:
+      - file_config
+      - env_config
+      - ext_config
+      - content_config
+      - named_config
+
+configs:
+  file_config:
+    file: ./foo/bar
+    labels:
+      com.example.foo: bar
+  env_config:
+    environment: FOO_BAR
+    labels:
+      com.example.baz: qux
+  ext_config:
+    external: true
+    name: my_external_config
+    labels:
+      com.example.secure: "true"
+  content_config:
+    content: "inline content here"
+    labels:
+      com.example.content: test
+  named_config:
+    file: ./config.txt
+    name: custom_config_name
+    labels:
+      com.example.named: "true"
