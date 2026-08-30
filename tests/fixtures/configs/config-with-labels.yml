@@ -1,11 +1,17 @@
 services:
   foo:
+    image: alpine
     configs:
       - file_config
       - env_config
       - ext_config
       - content_config
       - named_config
+      - source: file_config
+        target: /etc/config.txt
+        uid: "1000"
+        gid: "1000"
+        mode: 0440
 
 configs:
   file_config:

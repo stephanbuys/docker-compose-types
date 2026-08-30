@@ -1084,23 +1084,23 @@ pub enum ComposeConfig {
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(untagged)]
-pub enum Secrets {
-    Simple(Vec<String>),
-    Advanced(Vec<AdvancedSecrets>),
+pub enum Secret {
+    Simple(String),
+    Advanced(AdvancedSecrets),
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+pub struct Secrets(pub Vec<Secret>);
 
 impl Default for Secrets {
     fn default() -> Self {
-        Self::Simple(Vec::new())
+        Self(Vec::new())
     }
 }
 
 impl Secrets {
     pub fn is_empty(&self) -> bool {
-        match self {
-            Self::Simple(v) => v.is_empty(),
-            Self::Advanced(v) => v.is_empty(),
-        }
+        self.0.is_empty()
     }
 }
 
@@ -1120,23 +1120,23 @@ pub struct AdvancedSecrets {
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(untagged)]
-pub enum Configs {
-    Simple(Vec<String>),
-    Advanced(Vec<AdvancedConfigs>),
+pub enum Config {
+    Simple(String),
+    Advanced(AdvancedConfigs),
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+pub struct Configs(pub Vec<Config>);
 
 impl Default for Configs {
     fn default() -> Self {
-        Self::Simple(Vec::new())
+        Self(Vec::new())
     }
 }
 
 impl Configs {
     pub fn is_empty(&self) -> bool {
-        match self {
-            Self::Simple(v) => v.is_empty(),
-            Self::Advanced(v) => v.is_empty(),
-        }
+        self.0.is_empty()
     }
 }
 
