@@ -57,6 +57,8 @@ pub struct Compose {
     pub service: Option<Service>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub secrets: Option<ComposeSecrets>,
+    #[serde(default, skip_serializing_if = "ComposeConfigs::is_empty")]
+    pub configs: ComposeConfigs,
     #[cfg(feature = "indexmap")]
     #[serde(flatten, skip_serializing_if = "IndexMap::is_empty")]
     pub extensions: IndexMap<Extension, Value>,
@@ -291,6 +293,8 @@ pub struct Service {
     pub security_opt: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub secrets: Option<Secrets>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub configs: Option<Configs>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pull_policy: Option<PullPolicy>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1002,42 +1006,143 @@ pub struct ComposeSecrets(
 );
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
-#[serde(deny_unknown_fields, rename_all = "snake_case")]
+#[serde(untagged, deny_unknown_fields)]
 pub enum ComposeSecret {
-    File(String),
-    Environment(String),
-    #[serde(untagged)]
+    File {
+        file: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        name: Option<String>,
+        #[serde(default, skip_serializing_if = "Labels::is_empty")]
+        labels: Labels,
+    },
+    Environment {
+        environment: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        name: Option<String>,
+        #[serde(default, skip_serializing_if = "Labels::is_empty")]
+        labels: Labels,
+    },
     External {
         external: bool,
         name: String,
+        #[serde(default, skip_serializing_if = "Labels::is_empty")]
+        labels: Labels,
+    },
+}
+
+#[cfg(feature = "indexmap")]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
+pub struct ComposeConfigs(
+    #[serde(with = "yaml_backend::with::singleton_map_recursive")]
+    pub  IndexMap<String, Option<ComposeConfig>>,
+);
+
+#[cfg(not(feature = "indexmap"))]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
+pub struct ComposeConfigs(
+    #[serde(with = "yaml_backend::with::singleton_map_recursive")]
+    pub  HashMap<String, Option<ComposeConfig>>,
+);
+
+impl ComposeConfigs {
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(untagged, deny_unknown_fields)]
+pub enum ComposeConfig {
+    File {
+        file: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        name: Option<String>,
+        #[serde(default, skip_serializing_if = "Labels::is_empty")]
+        labels: Labels,
+    },
+    Environment {
+        environment: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        name: Option<String>,
+        #[serde(default, skip_serializing_if = "Labels::is_empty")]
+        labels: Labels,
+    },
+    Content {
+        content: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        name: Option<String>,
+        #[serde(default, skip_serializing_if = "Labels::is_empty")]
+        labels: Labels,
+    },
+    External {
+        external: bool,
+        name: String,
+        #[serde(default, skip_serializing_if = "Labels::is_empty")]
+        labels: Labels,
     },
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(untagged)]
-pub enum Secrets {
-    Simple(Vec<String>),
-    Advanced(Vec<AdvancedSecrets>),
+pub enum Secret {
+    Simple(String),
+    Advanced(AdvancedSecrets),
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+pub struct Secrets(pub Vec<Secret>);
 
 impl Default for Secrets {
     fn default() -> Self {
-        Self::Simple(Vec::new())
+        Self(Vec::new())
     }
 }
 
 impl Secrets {
     pub fn is_empty(&self) -> bool {
-        match self {
-            Self::Simple(v) => v.is_empty(),
-            Self::Advanced(v) => v.is_empty(),
-        }
+        self.0.is_empty()
     }
 }
 
 #[derive(Clone, Default, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct AdvancedSecrets {
+    pub source: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub target: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub uid: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub gid: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mode: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[serde(untagged)]
+pub enum Config {
+    Simple(String),
+    Advanced(AdvancedConfigs),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+pub struct Configs(pub Vec<Config>);
+
+impl Default for Configs {
+    fn default() -> Self {
+        Self(Vec::new())
+    }
+}
+
+impl Configs {
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
+
+#[derive(Clone, Default, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[serde(deny_unknown_fields)]
+pub struct AdvancedConfigs {
     pub source: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub target: Option<String>,
