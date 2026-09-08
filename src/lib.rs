@@ -5,7 +5,7 @@ use serde::{Deserialize, Deserializer, Serialize};
 #[cfg(feature = "norway")]
 use serde_norway as yaml_backend;
 #[cfg(all(feature = "yaml", not(any(feature = "norway", feature = "yml"))))]
-use serde_yaml as yaml_backend;
+use yaml_serde as yaml_backend;
 #[cfg(all(feature = "yml", not(feature = "norway")))]
 use serde_yml as yaml_backend;
 

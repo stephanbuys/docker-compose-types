@@ -1,7 +1,7 @@
 #[cfg(all(feature = "norway", not(feature = "yaml"), not(feature = "yml")))]
 use serde_norway::from_str;
 #[cfg(feature = "yaml")]
-use serde_yaml::from_str;
+use yaml_serde::from_str;
 #[cfg(all(feature = "yml", not(feature = "yaml"), not(feature = "norway")))]
 use serde_yml::from_str;
 

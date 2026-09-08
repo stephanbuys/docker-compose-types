@@ -15,7 +15,7 @@ use docker_compose_types::Compose;
 fn main() {
     let file_payload =
         std::fs::read_to_string("tests/fixtures/v3-full/docker-compose.yml").unwrap();
-    let compose_content = match serde_yaml::from_str::<Compose>(&file_payload) {
+    let compose_content = match yaml_serde::from_str::<Compose>(&file_payload) {
         Ok(c) => c,
         Err(e) => panic!("Failed to parse docker-compose file: {}", e),
     };
@@ -26,7 +26,7 @@ fn main() {
 ### Creating a docker-compose file from the crate's types
 ```rust
 use docker_compose_types::{Compose, Service, Services, SingleService};
-use serde_yaml;
+use yaml_serde;
 
 fn main() {
     let compose_content = Compose {
@@ -47,7 +47,7 @@ fn main() {
 
     let target_file = std::path::Path::new("docker-compose.yml");
     // serialize to string
-    let serialized = match serde_yaml::to_string(&compose_content) {
+    let serialized = match yaml_serde::to_string(&compose_content) {
         Ok(s) => s,
         Err(e) => panic!("Failed to serialize docker-compose file: {}", e),
     };
