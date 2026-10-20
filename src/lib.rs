@@ -915,6 +915,8 @@ pub struct Limits {
     pub memory: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub devices: Option<Vec<Device>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pids: Option<i64>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Default)]
