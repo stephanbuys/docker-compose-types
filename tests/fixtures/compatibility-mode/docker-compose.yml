@@ -12,6 +12,7 @@ services:
         limits:
           memory: 300M
           cpus: '0.7'
+          pids: 100
         reservations:
           memory: 100M
     volumes:
