@@ -1,0 +1,34 @@
+name: command-lifecycle
+services:
+  postgres:
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    image: postgres:18
+    networks:
+      default: null
+    volumes:
+      - type: volume
+        source: pg-data
+        target: /var/lib/postgresql
+        volume: {}
+    post_start:
+      - command:
+          - ./do_something_on_startup.sh
+        user: root
+        privileged: true
+        environment:
+          FOO: BAR
+    pre_stop:
+      - command:
+          - ./do_something_on_shutdown.sh
+        user: root
+        environment:
+          FOO: BAR
+networks:
+  default:
+    name: command-lifecycle_default
+volumes:
+  pg-data:
+    name: command-lifecycle_pg-data
