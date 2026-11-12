@@ -303,6 +303,10 @@ pub struct Service {
     pub mem_swappiness: Option<u16>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub runtime: Option<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub pre_stop: Vec<LifeCycleCommand>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub post_start: Vec<LifeCycleCommand>,
 }
 
 #[cfg(feature = "indexmap")]
@@ -1105,6 +1109,25 @@ pub struct Volume {
 #[serde(deny_unknown_fields)]
 pub struct TmpfsSettings {
     pub size: u64,
+}
+
+/// models post_start and pre_stop
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+pub struct LifeCycleCommand {
+    /// The command to run after the container has started. This attribute is required.
+    pub command: Command,
+    /// user to run the command. If not set, the command is run with the same user as the main service command.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user: Option<String>,
+    /// The command run with privileged access.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub privileged: bool,
+    /// The working directory in which to run the command. If not set, it is run in the same working directory as the main service command.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub working_dir: Option<String>,
+    /// Sets the environment variables to run the post_start command. The command inherits the environment set for the service's main command, and this section lets you to append or override values.
+    #[serde(default, skip_serializing_if = "Environment::is_empty")]
+    pub environment: Environment,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
